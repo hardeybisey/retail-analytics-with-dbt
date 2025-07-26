@@ -11,8 +11,8 @@ renamed as (
         geolocation_zip_code_prefix::integer as zip_code_prefix,
         geolocation_lat::float as latitude,
         geolocation_lng::float as longitude,
-        geolocation_city as city,
-        geolocation_state as state
+        upper(geolocation_city) as city,
+        upper(geolocation_state) as state
 
     from source
 

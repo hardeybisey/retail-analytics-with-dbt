@@ -35,69 +35,18 @@ The dataset contains real commercial data from Olist, the largest department sto
 
 ## **Data Dictionary**
 
-### 1. **Customers Dataset**
 
-This dataset contains information about the customer and their location. It can be used to identify unique customers in the orders dataset and to determine the delivery location of orders.
-
-**Key Point:** In this system, each order is assigned a unique `customer_id`. This means the same customer will have different IDs for different orders. The `customer_unique_id` is provided to allow for the identification of customers who have made repeat purchases.
-
----
-
-### 2. **Geolocation Dataset**
-
-This dataset includes Brazilian zip codes and their corresponding latitude and longitude coordinates. It is useful for plotting maps and calculating distances between sellers and customers.
-
----
-
-### 3. **Order Items Dataset**
-
-This dataset contains data about the items purchased within each order.
-
-**Example:**
-
-An order with `order_id = 00143d0f86d6fbd9f9b38ab440ac16f5` contains 3 of the same product. The freight for each item is calculated based on its measurements and weight.
-
-*   **Total Order Item Value:** `21.33 * 3 = 63.99`
-*   **Total Freight Value:** `15.10 * 3 = 45.30`
-*   **Total Order Value (Product + Freight):** `45.30 + 63.99 = 109.29`
-
----
-
-### 4. **Payments Dataset**
-
-This dataset includes information about the payment methods used for each order.
-
----
-
-### 5. **Order Reviews Dataset**
-
-This dataset contains information about customer reviews.
-
-After a customer makes a purchase from the Olist Store, a seller is notified to fulfill the order. Once the customer receives the product, or the estimated delivery date has passed, the customer receives a satisfaction survey via email. In this survey, they can rate their purchase experience and provide written comments.
-
----
-
-### 6. **Order Dataset**
-
-This is the core dataset. From each order, you can find all other related information.
-
----
-
-### 7. **Products Dataset**
-
-This dataset includes data about the products sold by Olist.
-
----
-
-### 8. **Sellers Dataset**
-
-This dataset contains information about the sellers who fulfilled orders placed on Olist. It can be used to find the seller's location and to identify which seller fulfilled each product order.
-
----
-
-### 9. **Category Name Translation**
-
-This dataset translates the `product_category_name` to English.
+| Dataset Name              | Description                                                                                                                                                                                | Key Columns                                    |
+|--------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------|
+| **Customers**            | Contains customer information and location. Use `customer_id` to identify unique orders and `customer_unique_id` to identify repeat purchasers.                                            | `customer_id`, `customer_unique_id`, `customer_zip_code_prefix`, `customer_city`, `customer_state` |
+| **Geolocation**          | Brazilian zip codes with latitude and longitude. Useful for mapping and distance calculations between customer and seller locations.                                                       | `geolocation_zip_code_prefix`, `geolocation_lat`, `geolocation_lng`, `geolocation_city`, `geolocation_state` |
+| **Order Items**          | Data on each item within an order. Includes quantity, price, and freight for each item.                                                                                                    | `order_id`, `order_item_id`, `product_id`, `seller_id`, `shipping_limit_date`, `price`, `freight_value` |
+| **Payments**             | Details payment methods used per order. Orders can have multiple payments using different methods.                                                                                         | `order_id`, `payment_sequential`, `payment_type`, `payment_installments`, `payment_value` |
+| **Order Reviews**        | Customer reviews post-delivery or after the expected delivery date. Includes ratings and textual feedback.                                                                                 | `review_id`, `order_id`, `review_score`, `review_comment_title`, `review_comment_message`, `review_creation_date`, `review_answer_timestamp` |
+| **Orders**               | Core dataset linking to all others. Represents individual purchases and delivery timelines.                                                                                                | `order_id`, `customer_id`, `order_status`, `order_purchase_timestamp`, `order_approved_at`, `order_delivered_carrier_date`, `order_delivered_customer_date`, `order_estimated_delivery_date` |
+| **Products**             | Information about products sold. Includes name, category, and physical attributes.                                                                                                         | `product_id`, `product_category_name`, `product_name_lenght`, `product_description_lenght`, `product_photos_qty`, `product_weight_g`, `product_length_cm`, `product_height_cm`, `product_width_cm` |
+| **Sellers**              | Data about sellers, including their location and identification. Used to trace product fulfilment.                                                                                         | `seller_id`, `seller_zip_code_prefix`, `seller_city`, `seller_state` |
+| **Category Translation** | Translates original product categories (in Portuguese) to English.                                                                                                                          | `product_category_name`, `product_category_name_english` |
 
 ---
 ### Getting started
