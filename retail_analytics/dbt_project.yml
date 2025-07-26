@@ -14,19 +14,30 @@ clean-targets:
   - "target"
   - "dbt_packages"
 
-
-# Configuring models
-# Full documentation: https://docs.getdbt.com/docs/configuring-models
-
 models:
   retail_analytics:
-    source:
-      +materialized: view
-    staging:
+    +materialized: view
+    +schema: analytics
+    +tags: ['analytics']
+    stage:
       +materialized: ephemeral
+      +schema: stg
+      +tags: ['stg']
     marts:
       +materialized: table
+      +schema: mart
+      +tags: ['mart']
 
-# seeds:
-#   retail_analytics:
-#     +schema: csv_input
+seeds:
+  retail_analytics:
+    +schema: csv_input
+
+tests:
+  +severity: warn
+  retail_analytics:
+    +warn_if: ">10"
+  marts:
+    +severity: warn
+  staging:
+   +severity: warn
+   +warn_if: ">10"

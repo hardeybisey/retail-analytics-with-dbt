@@ -1,0 +1,276 @@
+version: 2
+
+sources:
+  - name: csv_input
+    description: ""
+    tables:
+      - name: olist_customers
+        description: >
+          This dataset contains information about the customer and their location. It can be used to identify unique customers in the orders dataset and to determine the delivery location of orders. <br>
+
+          **Key Point:** In this system, each order is assigned a unique `customer_id`. This means the same customer will have different IDs for different orders. The `customer_unique_id` is provided to allow for the identification of customers who have made repeat purchases.
+        meta:
+          domain: customers
+        identifier: olist_customers_dataset
+        columns:
+          - name: customer_id
+            data_type: text
+            description: "The unique identifier for each customer."
+          - name: customer_unique_id
+            data_type: text
+            description: ""
+          - name: customer_zip_code_prefix
+            data_type: integer
+            description: "The zip code prefix of the customer's location."
+            tests:
+              - relationships:
+                  to: source('csv_input', 'olist_geolocation')
+                  field: geolocation_zip_code_prefix
+          - name: customer_city
+            data_type: text
+            description: ""
+          - name: customer_state
+            data_type: text
+            description: ""
+
+      - name: olist_geolocation
+        description: >
+          This dataset includes Brazilian zip codes and their corresponding latitude and longitude coordinates. It is useful for plotting maps and calculating distances between sellers and customers.
+        meta:
+          domain: geolocation
+        identifier: olist_geolocation_dataset
+        columns:
+          - name: geolocation_zip_code_prefix
+            data_type: integer
+            description: ""
+          - name: geolocation_lat
+            data_type: double precision
+            description: ""
+          - name: geolocation_lng
+            data_type: double precision
+            description: ""
+          - name: geolocation_city
+            data_type: text
+            description: ""
+          - name: geolocation_state
+            data_type: text
+            description: ""
+
+      - name: olist_order_items
+        description: >
+          This dataset contains data about the items purchased within each order.
+        meta:
+          domain: orders
+        identifier: olist_order_items_dataset
+        columns:
+          - name: order_id
+            data_type: text
+            description: "The unique identifier for each order."
+            tests:
+              - relationships:
+                  to: source('csv_input', 'olist_orders')
+                  field: order_id
+          - name: order_item_id
+            data_type: integer
+            description: ""
+          - name: product_id
+            data_type: text
+            description: "The unique identifier for each product."
+            tests:
+              - relationships:
+                  to: source('csv_input', 'olist_products')
+                  field: product_id
+          - name: seller_id
+            data_type: text
+            description: "The unique identifier for the seller who fulfilled the order."
+            tests:
+              - relationships:
+                  to: source('csv_input', 'olist_sellers')
+                  field: seller_id
+          - name: shipping_limit_date
+            data_type: timestamp without time zone
+            description: ""
+          - name: price
+            data_type: double precision
+            description: ""
+          - name: freight_value
+            data_type: double precision
+            description: ""
+
+      - name: olist_order_payments
+        description: >
+          This dataset includes information about the payment methods used for each order.
+        meta:
+          domain: payments
+        identifier: olist_order_payments_dataset
+        columns:
+          - name: order_id
+            data_type: text
+            description: "The unique identifier for each order."
+            tests:
+              - relationships:
+                  to: source('csv_input', 'olist_orders')
+                  field: order_id
+          - name: payment_sequential
+            data_type: integer
+            description: ""
+          - name: payment_type
+            data_type: text
+            description: ""
+          - name: payment_installments
+            data_type: integer
+            description: ""
+          - name: payment_value
+            data_type: double precision
+            description: ""
+
+      - name: olist_order_reviews
+        description: >
+          This dataset contains information about customer reviews.
+        meta:
+          domain: customers
+        identifier: olist_order_reviews_dataset
+        columns:
+          - name: review_id
+            data_type: text
+            description: "The unique identifier for each review."
+            tests:
+              - unique
+              - not_null
+          - name: order_id
+            data_type: text
+            description: "The unique identifier for each order."
+            tests:
+              - relationships:
+                  to: source('csv_input', 'olist_orders')
+                  field: order_id
+          - name: review_score
+            data_type: integer
+            description: ""
+          - name: review_comment_title
+            data_type: text
+            description: ""
+          - name: review_comment_message
+            data_type: text
+            description: ""
+          - name: review_creation_date
+            data_type: timestamp without time zone
+            description: ""
+          - name: review_answer_timestamp
+            data_type: timestamp without time zone
+            description: ""
+
+      - name: olist_orders
+        description: >
+          This is the core dataset. From each order, you can find all other related information.
+        meta:
+          domain: orders
+        identifier: olist_orders_dataset
+        columns:
+          - name: order_id
+            data_type: text
+            description: "The unique identifier for each order."
+          - name: customer_id
+            data_type: text
+            description: "The unique identifier for the customer who placed the order."
+            tests:
+              - relationships:
+                  to: source('csv_input', 'olist_customers')
+                  field: customer_id
+          - name: order_status
+            data_type: text
+            description: ""
+          - name: order_purchase_timestamp
+            data_type: timestamp without time zone
+            description: ""
+          - name: order_approved_at
+            data_type: timestamp without time zone
+            description: ""
+          - name: order_delivered_carrier_date
+            data_type: timestamp without time zone
+            description: ""
+          - name: order_delivered_customer_date
+            data_type: timestamp without time zone
+            description: ""
+          - name: order_estimated_delivery_date
+            data_type: timestamp without time zone
+            description: ""
+
+      - name: olist_products
+        description: >
+          This dataset contains information about the products sold on Olist.
+        meta:
+          domain: products
+        identifier: olist_products_dataset
+        columns:
+          - name: product_id
+            data_type: text
+            description: "The unique identifier for each product."
+            tests:
+              - unique
+              - not_null
+          - name: product_category_name
+            data_type: text
+            description: "The category of the product."
+          - name: product_name_lenght
+            data_type: integer
+            description: ""
+          - name: product_description_lenght
+            data_type: integer
+            description: ""
+          - name: product_photos_qty
+            data_type: integer
+            description: ""
+          - name: product_weight_g
+            data_type: integer
+            description: ""
+          - name: product_length_cm
+            data_type: integer
+            description: ""
+          - name: product_height_cm
+            data_type: integer
+            description: ""
+          - name: product_width_cm
+            data_type: integer
+            description: ""
+
+      - name: olist_sellers
+        description: >
+          This dataset contains information about the sellers who fulfilled orders placed on Olist. It can be used to find the seller's location and to identify which seller fulfilled each product order..
+        meta:
+          domain: sellers
+        identifier: olist_sellers_dataset
+        columns:
+          - name: seller_id
+            data_type: text
+            description: "The unique identifier for each seller."
+            tests:
+              - unique
+              - not_null
+          - name: seller_zip_code_prefix
+            data_type: integer
+            description: "The zip code prefix of the seller's location."
+            tests:
+              - relationships:
+                  to: source('csv_input', 'olist_geolocation')
+                  field: geolocation_zip_code_prefix
+          - name: seller_city
+            data_type: text
+            description: ""
+          - name: seller_state
+            data_type: text
+            description: ""
+
+      - name: product_category_name_translation
+        description: >
+          This dataset contains translations of product categories.
+          It can be used to understand the product categories in different languages.
+        meta:
+          domain: products
+        columns:
+          - name: product_category_name
+            data_type: text
+            description: ""
+          - name: product_category_name_english
+            data_type: text
+            description: ""

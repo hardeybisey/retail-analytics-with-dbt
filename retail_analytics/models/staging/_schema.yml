@@ -1,0 +1,194 @@
+version: 2
+
+models:
+  - name: stg_customers
+    description: ""
+    columns:
+      - name: customer_id
+        data_type: text
+        description: "The unique identifier for each customer."
+      - name: customer_order_id
+        data_type: text
+        description: ""
+      - name: zip_code_prefix
+        data_type: integer
+        description: "The zip code prefix of the customer's location."
+      - name: city
+        data_type: text
+        description: ""
+      - name: state
+        data_type: text
+        description: ""
+
+  - name: stg_geolocation
+    description: ""
+    columns:
+      - name: zip_code_prefix
+        data_type: integer
+        description: ""
+      - name: latitude
+        data_type: float
+        description: ""
+      - name: longitude
+        data_type: float
+        description: ""
+      - name: city
+        data_type: text
+        description: ""
+      - name: state
+        data_type: text
+        description: ""
+
+  - name: stg_order_items
+    description: ""
+    columns:
+      - name: order_id
+        data_type: text
+        description: "The unique identifier for each order."
+      - name: order_item_id
+        data_type: integer
+        description: ""
+      - name: product_id
+        data_type: text
+        description: "The unique identifier for each product."
+      - name: seller_id
+        data_type: text
+        description: "The unique identifier for the seller who fulfilled the order."
+      - name: shipping_limit_date
+        data_type: timestamp without time zone
+        description: ""
+      - name: price
+        data_type: float
+        description: ""
+      - name: freight_value
+        data_type: float
+        description: ""
+
+  - name: stg_order_payments
+    description: ""
+    columns:
+      - name: order_id
+        data_type: text
+        description: "The unique identifier for each order."
+      - name: payment_sequential_id
+        data_type: integer
+        description: ""
+      - name: payment_type
+        data_type: text
+        description: ""
+      - name: installments
+        data_type: integer
+        description: ""
+      - name: payment_value
+        data_type: float
+        description: ""
+
+  - name: stg_order_reviews
+    description: ""
+    columns:
+      - name: review_id
+        data_type: text
+        description: "The unique identifier for each review."
+      - name: order_id
+        data_type: text
+        description: "The unique identifier for each order."
+      - name: score
+        data_type: integer
+        description: ""
+      - name: comment_title
+        data_type: text
+        description: ""
+      - name: comment_message
+        data_type: text
+        description: ""
+      - name: creation_date
+        data_type: timestamp without time zone
+        description: ""
+      - name: answer_timestamp
+        data_type: timestamp without time zone
+        description: ""
+
+  - name: stg_orders
+    description: ""
+    columns:
+      - name: order_id
+        data_type: text
+        description: "The unique identifier for each order."
+      - name: customer_id
+        data_type: text
+        description: "The unique identifier for the customer who placed the order."
+      - name: order_status
+        data_type: text
+        description: ""
+      - name: purchase_timestamp
+        data_type: timestamp without time zone
+        description: ""
+      - name: approved_at
+        data_type: timestamp without time zone
+        description: ""
+      - name: delivered_carrier_date
+        data_type: timestamp without time zone
+        description: ""
+      - name: delivered_customer_date
+        data_type: timestamp without time zone
+        description: ""
+      - name: estimated_delivery_date
+        data_type: timestamp without time zone
+        description: ""
+
+  - name: stg_products
+    description: ""
+    columns:
+      - name: product_id
+        data_type: text
+        description: "The unique identifier for each product."
+      - name: category_name
+        data_type: text
+        description: "The category of the product."
+      - name: name_length
+        data_type: integer
+        description: ""
+      - name: description_length
+        data_type: integer
+        description: ""
+      - name: photos_qty
+        data_type: integer
+        description: ""
+      - name: weight_gram
+        data_type: integer
+        description: ""
+      - name: length_cm
+        data_type: integer
+        description: ""
+      - name: height_cm
+        data_type: integer
+        description: ""
+      - name: width_cm
+        data_type: integer
+        description: ""
+
+  - name: stg_sellers
+    description: ""
+    columns:
+      - name: seller_id
+        data_type: text
+        description: "The unique identifier for each seller."
+      - name: zip_code_prefix
+        data_type: integer
+        description: "The zip code prefix of the seller's location."
+      - name: city
+        data_type: text
+        description: ""
+      - name: state
+        data_type: text
+        description: ""
+
+  - name: stg_product_category_name_translation
+    description: ""
+    columns:
+      - name: product_category_name
+        data_type: text
+        description: ""
+      - name: product_category_name_english
+        data_type: text
+        description: ""
