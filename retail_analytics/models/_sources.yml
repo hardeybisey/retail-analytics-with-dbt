@@ -22,10 +22,6 @@ sources:
           - name: customer_zip_code_prefix
             data_type: integer
             description: "The zip code prefix of the customer's location."
-            tests:
-              - relationships:
-                  to: source('csv_input', 'olist_geolocation')
-                  field: geolocation_zip_code_prefix
           - name: customer_city
             data_type: text
             description: ""
@@ -65,28 +61,16 @@ sources:
         columns:
           - name: order_id
             data_type: text
-            description: "The unique identifier for each order."
-            tests:
-              - relationships:
-                  to: source('csv_input', 'olist_orders')
-                  field: order_id
+            description: ""
           - name: order_item_id
             data_type: integer
             description: ""
           - name: product_id
             data_type: text
-            description: "The unique identifier for each product."
-            tests:
-              - relationships:
-                  to: source('csv_input', 'olist_products')
-                  field: product_id
+            description: ""
           - name: seller_id
             data_type: text
-            description: "The unique identifier for the seller who fulfilled the order."
-            tests:
-              - relationships:
-                  to: source('csv_input', 'olist_sellers')
-                  field: seller_id
+            description: ""
           - name: shipping_limit_date
             data_type: timestamp without time zone
             description: ""
@@ -106,11 +90,7 @@ sources:
         columns:
           - name: order_id
             data_type: text
-            description: "The unique identifier for each order."
-            tests:
-              - relationships:
-                  to: source('csv_input', 'olist_orders')
-                  field: order_id
+            description: ""
           - name: payment_sequential
             data_type: integer
             description: ""
@@ -133,17 +113,10 @@ sources:
         columns:
           - name: review_id
             data_type: text
-            description: "The unique identifier for each review."
-            tests:
-              - unique
-              - not_null
+            description: ""
           - name: order_id
             data_type: text
-            description: "The unique identifier for each order."
-            tests:
-              - relationships:
-                  to: source('csv_input', 'olist_orders')
-                  field: order_id
+            description: ""
           - name: review_score
             data_type: integer
             description: ""
@@ -169,14 +142,10 @@ sources:
         columns:
           - name: order_id
             data_type: text
-            description: "The unique identifier for each order."
+            description: ""
           - name: customer_id
             data_type: text
-            description: "The unique identifier for the customer who placed the order."
-            tests:
-              - relationships:
-                  to: source('csv_input', 'olist_customers')
-                  field: customer_id
+            description: ""
           - name: order_status
             data_type: text
             description: ""
@@ -205,13 +174,10 @@ sources:
         columns:
           - name: product_id
             data_type: text
-            description: "The unique identifier for each product."
-            tests:
-              - unique
-              - not_null
+            description: ""
           - name: product_category_name
             data_type: text
-            description: "The category of the product."
+            description: ""
           - name: product_name_lenght
             data_type: integer
             description: ""
@@ -243,17 +209,10 @@ sources:
         columns:
           - name: seller_id
             data_type: text
-            description: "The unique identifier for each seller."
-            tests:
-              - unique
-              - not_null
+            description: ""
           - name: seller_zip_code_prefix
             data_type: integer
-            description: "The zip code prefix of the seller's location."
-            tests:
-              - relationships:
-                  to: source('csv_input', 'olist_geolocation')
-                  field: geolocation_zip_code_prefix
+            description: ""
           - name: seller_city
             data_type: text
             description: ""

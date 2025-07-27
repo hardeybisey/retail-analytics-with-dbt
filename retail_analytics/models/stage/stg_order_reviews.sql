@@ -12,10 +12,10 @@ renamed as (
         review_id,
         order_id,
         review_score::integer as score,
-        review_comment_title as comment_title,
-        review_comment_message as comment_message,
-        review_creation_date::timestamp as creation_date,
-        review_answer_timestamp::timestamp as answer_timestamp
+        review_comment_title as title,
+        review_comment_message as message,
+        review_creation_date::date as creation_date,
+        review_answer_timestamp::date as response_date
 
     from source
 

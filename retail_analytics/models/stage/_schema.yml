@@ -1,0 +1,219 @@
+version: 2
+
+models:
+  - name: stg_geolocation
+    description: ""
+    columns:
+      - name: zip_code_prefix
+        data_type: integer
+        description: "first 5 digits of zip code."
+        tests:
+          - unique
+          - not_null
+      - name: latitude
+        data_type: float
+        description: "latitude of the zip code location."
+      - name: longitude
+        data_type: float
+        description: "longitude of the zip code location."
+      - name: city
+        data_type: text
+        description: "city name of the zip code location."
+      - name: state
+        data_type: text
+        description: "state of the zip code location."
+
+  - name: stg_order_items
+    description: "Order items data from the retail dataset."
+    columns:
+      - name: order_id
+        data_type: text
+        description: "The unique identifier for each order."
+        tests:
+          - relationships:
+              to: ref('stg_orders')
+              field: order_id
+          - not_null
+      - name: order_item_id
+        data_type: integer
+        description: "sequential number identifying number of items included in the same order."
+        tests:
+          - unique
+          - not_null
+      - name: product_id
+        data_type: text
+        description: "The unique identifier for each product."
+        tests:
+          - relationships:
+              to: ref('stg_products')
+              field: product_id
+          - not_null
+      - name: seller_id
+        data_type: text
+        description: "The unique identifier for the seller who fulfilled the order."
+        tests:
+          - relationships:
+              to: ref('snapshot_sellers')
+              field: seller_id
+          - not_null
+      - name: shipping_limit_date
+        data_type: datetime
+        description: "Shows the seller shipping limit date for handling the order over to the logistic partner."
+      - name: item_price
+        data_type: float
+        description: "item price at the moment of the order."
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "item_price >= 0"
+      - name: freight_price
+        data_type: float
+        description: "item freight value item (if an order has more than one item the freight value is splitted between items)."
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "freight_price >= 0"
+
+  - name: stg_order_payments
+    description: "Order payments data from the retail dataset."
+    columns:
+      - name: order_id
+        data_type: text
+        description: "The unique identifier for each order."
+        tests:
+          - relationships:
+              to: ref('stg_orders')
+              field: order_id
+          - not_null
+      - name: sequence_id
+        data_type: integer
+        description: "a customer may pay an order with more than one payment method. If he does so, a sequence will be created to"
+      - name: payment_type
+        data_type: text
+        description: "method of payment chosen by the customer."
+      - name: num_of_installments
+        data_type: integer
+        description: "number of installments chosen by the customer."
+      - name: amount
+        data_type: float
+        description: "transaction value."
+
+  - name: stg_order_reviews
+    description: "Order reviews data from the retail dataset."
+    columns:
+      - name: review_id
+        data_type: text
+        description: "The unique identifier for each review."
+        tests:
+          - unique
+          - not_null
+      - name: order_id
+        data_type: text
+        description: "The unique identifier for each order."
+        tests:
+          - relationships:
+              to: ref('stg_orders')
+              field: order_id
+      - name: score
+        data_type: integer
+        description: "Note ranging from 1 to 5 given by the customer on a satisfaction survey."
+        tests:
+          - accepted_values:
+              values: [1, 2, 3, 4, 5]
+          - not_null
+      - name: title
+        data_type: text
+        description: "Comment title from the review left by the customer, in Portuguese."
+      - name: message
+        data_type: text
+        description: "Comment message from the review left by the customer, in Portuguese."
+      - name: creation_date
+        data_type: datetime
+        description: "Shows the date in which the satisfaction survey was sent to the customer"
+      - name: response_date
+        data_type: datetime
+        description: "Shows satisfaction survey answer timestamp."
+
+  - name: stg_orders
+    description: "Order data from the retail dataset."
+    columns:
+      - name: order_id
+        data_type: text
+        description: "The unique identifier for each order."
+        tests:
+          - unique
+          - not_null
+      - name: customer_id
+        data_type: text
+        description: "The unique identifier for the customer who placed the order."
+        tests:
+          - relationships:
+              to: ref('snapshot_customers')
+              field: customer_id
+          - not_null
+      - name: order_status
+        data_type: text
+        description: "Reference to the order status (delivered, shipped, etc)"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['created', 'approved', 'invoiced', 'processing', 'shipped', 'delivered', 'returned', 'canceled']
+      - name: order_timestamp
+        data_type: timestamp without time zone
+        description: "Shows the purchase timestamp."
+      - name: payment_approved_date
+        data_type: date
+        description: "Shows the payment approval timestamp."
+      - name: delivered_to_carrier_date
+        data_type: date
+        description: "Shows the order posting timestamp. When it was handled to the logistic partner."
+      - name: delivered_to_customer_date
+        data_type: timestamp without time zone
+        description: "Shows the actual order delivery date to the customer."
+      - name: estimated_delivery_date
+        data_type: timestamp without time zone
+        description: "Shows the estimated delivery date that was informed to customer at the purchase moment"
+
+  - name: stg_products
+    description: "Product data from the retail dataset."
+    columns:
+      - name: product_id
+        data_type: text
+        description: "The unique identifier for each product."
+        tests:
+          - unique
+          - not_null
+      - name: category_name
+        data_type: text
+        description: "The category of the product, in Portuguese."
+      - name: name_length
+        data_type: integer
+        description: "number of characters extracted from the product name."
+      - name: description_length
+        data_type: integer
+        description: "number of characters extracted from the product description"
+      - name: photos_qty
+        data_type: integer
+        description: "number of product published photos"
+      - name: weight_g
+        data_type: integer
+        description: "product weight measured in grams."
+      - name: length_cm
+        data_type: integer
+        description: "product length measured in centimeters."
+      - name: height_cm
+        data_type: integer
+        description: "product height measured in centimeters."
+      - name: width_cm
+        data_type: integer
+        description: "product width measured in centimeters."
+
+  - name: stg_product_category_name_translation
+    description: "Product category name translation data from the retail dataset."
+    columns:
+      - name: product_category_name
+        data_type: text
+        description: "category name in Portuguese"
+      - name: product_category_name_english
+        data_type: text
+        description: "category name in English"

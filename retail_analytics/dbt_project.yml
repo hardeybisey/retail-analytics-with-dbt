@@ -20,9 +20,9 @@ models:
     +schema: analytics
     +tags: ['analytics']
     stage:
-      +materialized: ephemeral
-      +schema: stg
-      +tags: ['stg']
+      +materialized: table
+      +schema: stage
+      +tags: ['stage']
     marts:
       +materialized: table
       +schema: mart

@@ -9,8 +9,8 @@ with source as (
 renamed as (
 
     select
-        upper(product_category_name) as product_category_name,
-        upper(product_category_name_english) as product_category_name_english
+        upper(product_category_name) as category_name,
+        upper(product_category_name_english) as category_name_english
 
     from source
 

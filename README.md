@@ -49,6 +49,23 @@ The dataset contains real commercial data from Olist, the largest department sto
 | **Category Translation** | Translates original product categories (in Portuguese) to English.                                                                                                                          | `product_category_name`, `product_category_name_english` |
 
 ---
+
+## Data Model
+
+| Table Name              | Type      | Grain                             | Description                                                              |
+|------------------------|-----------|-----------------------------------|--------------------------------------------------------------------------|
+| dim_customer           | Dimension | 1 row per customer_unique_id      | Unique customer profile, independent of orders                           |
+| dim_geolocation        | Dimension | 1 row per zip code prefix         | Geographic mapping of zip codes to lat/lon, city, state                  |
+| dim_seller             | Dimension | 1 row per seller_id               | Seller metadata and location                                             |
+| dim_product            | Dimension | 1 row per product_id              | Product metadata and physical attributes                                 |
+| dim_product_category   | Dimension | 1 row per category name           | English translation of product categories                                |
+| dim_date               | Dimension | 1 row per day                     | Date dimension for temporal analysis                                     |
+| dim_order_review       | Dimension | 1 row per review_id               | Star rating, comments, review timeline                                   |
+| fact_orders            | Fact | 1 row per order_id                 | Order lifecycle: purchase, delivery, status                              |
+| fact_order_items       | Fact | 1 row per order_id + item_id       | Item-level price, freight, product, seller                               |
+| fact_payments          | Fact | 1 row per order + payment seq      | Multi-method or multi-installment payment data                           |
+
+---
 ### Getting started
 ---
 ### Setting up the project
@@ -59,3 +76,14 @@ The dataset contains real commercial data from Olist, the largest department sto
 
 ## Credits
 This project was inspired by this [repo](https://github.com/cnstlungu/postcard-company-datamart)
+
+
+
+
+| Enhancement                                | Benefit                                                                |
+|-------------------------------------------|------------------------------------------------------------------------|
+| SCD Type 2 for customer/seller             | Track changes in customer or seller profiles over time                |
+| Surrogate keys                             | Decouple from source system IDs, simplify joins                       |
+| Bridge tables                              | Handle nested or many-to-many relationships (e.g. tags, multi-cats)   |
+| Aggregated fact tables (monthly_sales)     | Speed up dashboards and reduce compute load                           |
+| Geospatial enrichment                      | Add region clusters or city tiers                                     |

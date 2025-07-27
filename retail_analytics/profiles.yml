@@ -10,4 +10,13 @@ retail_analytics:
       path: ../data/retail_analytics_prod.duckdb
       threads: 4
 
+    pg:
+      type: postgres
+      host: localhost
+      port: 5432
+      user: user
+      password: password
+      schema: csv_input
+      dbname: retail_analytics
+      threads: 8
   target: dev

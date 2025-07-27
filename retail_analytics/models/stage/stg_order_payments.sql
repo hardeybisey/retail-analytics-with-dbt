@@ -9,9 +9,9 @@ renamed as (
 
     select
         order_id,
-        payment_sequential::integer as payment_sequential_id,
-        payment_installments::integer as installments,
-        payment_value::float as payment_value,
+        payment_sequential::integer as sequence_id,
+        payment_installments::integer as num_of_installments,
+        payment_value::float as amount,
         upper(payment_type) as payment_type
 
     from source
