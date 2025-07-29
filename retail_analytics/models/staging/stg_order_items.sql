@@ -1,0 +1,26 @@
+{{ config(
+    tags = ['orders'],
+    )
+ }}
+
+WITH source AS (
+
+    SELECT * FROM {{ source('csv_input', 'olist_order_items') }}
+
+),
+
+renamed AS (
+
+    SELECT
+        order_id,
+        order_item_id,
+        product_id,
+        seller_id,
+        price::float AS item_price,
+        freight_value::float AS freight_price,
+        shipping_limit_date::date AS shipping_limit_date
+    FROM source
+
+)
+
+SELECT * FROM renamed

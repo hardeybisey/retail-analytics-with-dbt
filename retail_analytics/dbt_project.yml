@@ -19,11 +19,14 @@ models:
     +materialized: view
     +schema: analytics
     +tags: ['analytics']
-    stage:
-      +materialized: table
-      +schema: stage
-      +tags: ['stage']
-    marts:
+    staging:
+      +schema: staging
+      +tags: ['staging']
+    intermediate:
+      +materialized: ephemeral
+      +schema: intermediate
+      +tags: ['intermediate']
+    mart:
       +materialized: table
       +schema: mart
       +tags: ['mart']
@@ -36,7 +39,7 @@ tests:
   +severity: warn
   retail_analytics:
     +warn_if: ">10"
-  marts:
+  mart:
     +severity: warn
   staging:
    +severity: warn

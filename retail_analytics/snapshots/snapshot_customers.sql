@@ -15,24 +15,25 @@
         },
     )
 }}
-    with source as (
+    WITH source AS (
 
-        select * from {{ source('csv_input', 'olist_customers') }}
+        SELECT * FROM {{ source('csv_input', 'olist_customers') }}
 
     ),
 
-    renamed as (
+    renamed AS (
 
-        select
+        SELECT
             customer_id,
             customer_unique_id,
-            customer_zip_code_prefix::integer as zip_code_prefix,
-            upper(customer_city) as city,
-            upper(customer_state) as state
+            customer_zip_code_prefix::integer AS zip_code_prefix,
+            upper(customer_city) AS city,
+            upper(customer_state) AS state
 
-        from source
+        FROM source
 
     )
 
-    select * from renamed
+    SELECT * FROM renamed
+
 {% endsnapshot %}

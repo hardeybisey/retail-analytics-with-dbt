@@ -16,7 +16,7 @@ snapshots:
         tests:
           - relationships:
               to: ref('stg_geolocation')
-              field: geolocation_zip_code_prefix
+              field: zip_code_prefix
       - name: city
         data_type: text
         description: "seller city name"
@@ -31,7 +31,7 @@ snapshots:
       - name: valid_to
         data_type: timestamp
         description: "end date of the customer record, null if the record is current"
-      - name: modified_date
+      - name: dbt_modified_date
         data_type: timestamp
         description: "last modified date of the customer record"
         tests:
@@ -42,13 +42,13 @@ snapshots:
     columns:
       - name: customer_id
         data_type: text
-        description: "The unique identifier for each customer."
+        description: "key to the orders dataset. Each order has a unique customer_id."
         tests:
           - not_null
           - unique
       - name: customer_unique_id
         data_type: text
-        description: "A unique identifier for each customer, used for deduplication."
+        description: "The unique identifier for each customer."
         tests:
           - not_null
       - name: zip_code_prefix
@@ -57,7 +57,7 @@ snapshots:
         tests:
           - relationships:
               to: ref('stg_geolocation')
-              field: geolocation_zip_code_prefix
+              field: zip_code_prefix
           - not_null
       - name: city
         data_type: text
@@ -73,7 +73,7 @@ snapshots:
       - name: valid_to
         data_type: timestamp
         description: "end date of the customer record, null if the record is current"
-      - name: modified_date
+      - name: dbt_modified_date
         data_type: timestamp
         description: "last modified date of the customer record"
         tests:

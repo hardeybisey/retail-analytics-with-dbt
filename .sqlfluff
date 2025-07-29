@@ -1,5 +1,5 @@
 [sqlfluff]
-dialect = duckdb
+dialect = postgres
 templater = dbt
 exclude_rules = L009,L031
 format = github-annotation
@@ -14,4 +14,4 @@ project_dir = retail_analytics
 profiles_dir = retail_analytics
 
 [sqlfluff:rules:capitalisation.keywords]
-capitalisation_policy = consistent
+capitalisation_policy = upper
