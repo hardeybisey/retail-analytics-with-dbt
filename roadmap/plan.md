@@ -14,7 +14,7 @@ This project explores how to build scalable Retail Analytics solutions using six
 
 ## 📦 Dataset
 
-**Source:** [Olist Brazilian E-commerce Dataset](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce/code)<br>
+**Source:** [Olist Brazilian E-commerce Dataset](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce/data)<br>
 **Size:** ~100k Orders (2016–2018)<br>
 **Schema:**
 ![Data Schema](../images/HRhd2Y0.png)
