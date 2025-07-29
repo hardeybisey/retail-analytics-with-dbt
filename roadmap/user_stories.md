@@ -1,143 +1,177 @@
 # 📊 Retail Intelligence Analytics User Stories & Technical Solutions
+---
 
 ## 🧍‍♂️ 1. Customer Analytics
 
 **Q1: Track Active Customers by Region and Time**
-- **User Story**: As a growth manager, I want to track the number of active customers by region over time so I can assess marketing campaign effectiveness.
-- **Tables**: `customers`
-- **Logic**: Group customers by region and signup month; count distinct customers.
+- **User Story**: As a growth manager, I want to track the number of active customers by region over time to assess marketing campaign effectiveness.
+- **Tables**: `dim_customer`, `dim_geolocation`, `dim_date`, `fact_orders`
+- **Logic**:
+  - Join `fact_orders` with `dim_customer` on `customer_key` to get customer activity.
+  - Join `dim_customer` to `dim_geolocation` via zip code prefix or region.
+  - Use `dim_date` to group orders by order date (month or week).
+  - Count distinct active customers per region and time period.
 
 **Q2: Calculate Retention by Cohort**
-- **User Story**: As a CRM analyst, I want to calculate retention rates for customer cohorts so I can measure engagement.
-- **Tables**: `customers`, `transactions`
-- **Logic**: Create customer cohorts by signup month; track activity across future periods.
+- **User Story**: As a CRM analyst, I want to calculate retention rates for customer cohorts to measure engagement.
+- **Tables**: `dim_customer`, `fact_orders`, `dim_date`
+- **Logic**:
+  - Define cohorts by customers’ signup date (using `dim_customer` or inferred from first order date in `fact_orders`).
+  - Track repeat orders across subsequent time periods using `dim_date`.
+  - Calculate retention as percentage of cohort ordering again.
 
 **Q3: AOV by Segment**
-- **User Story**: As a business analyst, I want to analyse AOV across customer segments to drive personalisation.
-- **Tables**: `transactions`, `customers`
-- **Logic**: Calculate average order value per segment (e.g., region or tier).
+- **User Story**: As a business analyst, I want to analyse average order value across customer segments to drive personalisation.
+- **Tables**: `fact_orders`, `dim_customer`
+- **Logic**:
+  - Aggregate order totals from `fact_orders`.
+  - Join with `dim_customer` to segment by region, customer tier, or other demographic.
+  - Compute average order value per segment.
 
 **Q4: Top Products per Loyalty Tier**
-- **Tables**: `transactions`, `customers`, `products`
-- **Logic**: Join transactions with customer tier; rank most frequently purchased products.
+- **Tables**: `fact_order_items`, `fact_orders`, `dim_customer`, `dim_product`
+- **Logic**:
+  - Join `fact_order_items` with `fact_orders` to get `customer_key`.
+  - Join to `dim_customer` for loyalty tier info.
+  - Aggregate product purchase counts by tier.
+  - Rank products per tier by frequency.
 
 **Q5: RFM Segmentation**
-- **Tables**: `transactions`
-- **Logic**: Calculate Recency, Frequency, and Monetary values per customer and assign segment labels.
+- **Tables**: `fact_orders`
+- **Logic**:
+  - For each `customer_key` calculate:
+    - Recency = days since last order (using `dim_date`).
+    - Frequency = count of orders in a period.
+    - Monetary = sum of order values.
+  - Assign customers into RFM segments based on thresholds.
 
 **Q6: Lifetime Value by Cohort**
-- **Tables**: `transactions`, `customers`
-- **Logic**: Sum total revenue per customer across time; group by cohort for trend analysis.
+- **Tables**: `fact_orders`, `dim_customer`, `dim_date`
+- **Logic**:
+  - Aggregate total revenue per customer over their lifetime.
+  - Group customers by cohort (signup or first order date).
+  - Analyse trends in LTV across cohorts.
 
 ---
 
 ## 📦 2. Product Analytics
 
 **Q1: Revenue per Unit**
-- **User Story**: As a category manager, I want to see products generating the most revenue per unit sold.
-- **Tables**: `transactions`, `products`
-- **Logic**: Aggregate revenue and units sold; compute ratio.
+- **User Story**: As a category manager, I want to identify products generating the most revenue per unit sold.
+- **Tables**: `fact_order_items`, `dim_product`
+- **Logic**:
+  - Sum revenue (`price * quantity`) and units sold per product.
+  - Compute revenue per unit = total revenue / total units.
 
 **Q2: Category Conversion Rate**
-- **Tables**: `web_events`, `transactions`, `products`
-- **Logic**: Compare product views with purchases at the category level.
+- **Tables**: `fact_order_items`, `dim_product`, `dim_product_category`
+- **Logic**:
+  - Join product views (if tracked) with product categories.
+  - Compare category-level product views to actual purchases (`fact_order_items`).
+  - Calculate conversion rate = purchases / views per category.
 
 **Q3: Review Sentiment Trend by Product**
-- **Tables**: `product_reviews`
-- **Logic**: Generate sentiment scores; group by product and time.
+- **Tables**: `dim_order_review`, `dim_product`
+- **Logic**:
+  - Join reviews with products.
+  - Aggregate sentiment scores or star ratings by product and time period.
 
 **Q4: Price Elasticity of Top SKUs**
-- **Tables**: `transactions`, `products`
-- **Logic**: Measure impact of price changes on sales volume using regression.
+- **Tables**: `fact_order_items`, `dim_product`, `dim_date`
+- **Logic**:
+  - Analyse sales volume and price changes over time per product.
+  - Use regression to estimate elasticity.
 
 **Q5: Product Bundle Frequency**
-- **Tables**: `transactions`
-- **Logic**: Identify co-purchased products using basket analysis.
+- **Tables**: `fact_order_items`
+- **Logic**:
+  - Use basket analysis on `order_key` grouped items to find frequent co-purchases.
 
 **Q6: Polarised Products**
-- **Tables**: `product_reviews`
-- **Logic**: Identify products with high proportions of both 1★ and 5★ reviews.
+- **Tables**: `dim_order_review`
+- **Logic**:
+  - Identify products with high counts of both 1-star and 5-star reviews.
+  - Use proportions or thresholds.
 
 ---
 
 ## 💳 3. Transactions & Sales
 
 **Q1: Sales Trends by Region and Time**
-- **Tables**: `transactions`, `customers`
-- **Logic**: Aggregate revenue over time per region.
+- **Tables**: `fact_orders`, `dim_customer`, `dim_geolocation`, `dim_date`
+- **Logic**:
+  - Join orders to customers and customers to geolocation.
+  - Aggregate revenue by region and time period.
 
 **Q2: AOV Over Time**
-- **Tables**: `transactions`
-- **Logic**: Calculate average order value per time period.
+- **Tables**: `fact_orders`, `dim_date`
+- **Logic**:
+  - Calculate average order value grouped by order date (day/month).
 
 **Q3: First-time vs Repeat Purchase**
-- **Tables**: `transactions`
-- **Logic**: Use ordering to classify first vs repeat purchases per customer.
+- **Tables**: `fact_orders`
+- **Logic**:
+  - Identify first order per customer (minimum order date).
+  - Classify subsequent orders as repeat.
 
 **Q4: Product Co-occurrence Matrix**
-- **Tables**: `transactions`
-- **Logic**: Determine which products are purchased together in the same order.
+- **Tables**: `fact_order_items`
+- **Logic**:
+  - For each order, identify pairs of products purchased together.
+  - Aggregate counts to build co-occurrence matrix.
 
 **Q5: Inventory Shortage Detector**
-- **Tables**: `products`, `transactions`
-- **Logic**: Compare inventory levels to recent sales trends.
-
----
-
-## 🌐 4. Web Events & Funnel Analytics
-
-**Q1: Navigation Paths to Purchase**
-- **Tables**: `web_events`, `transactions`
-- **Logic**: Track session events and identify conversion paths.
-
-**Q2: Funnel Drop-off Rates**
-- **Tables**: `web_events`
-- **Logic**: Count session events by step (view → cart → purchase); compute drop-off rates.
-
-**Q3: Device CTR Comparison**
-- **Tables**: `web_events`
-- **Logic**: Compare click-through rates across device types.
-
-**Q4: Predict Purchase Intent from Sessions**
-- **Tables**: `web_events`
-- **Logic**: Feature engineer session behaviours; train ML model to predict purchase.
+- **Tables**: `dim_product`, `fact_order_items`
+- **Logic**:
+  - Compare inventory levels from `dim_product` to recent sales volume in `fact_order_items`.
+  - Flag products with low inventory vs demand.
 
 ---
 
 ## ⭐ 5. Review & GenAI / LLM Analytics
 
 **Q1: Average Review Rating by Product**
-- **Tables**: `product_reviews`
-- **Logic**: Aggregate ratings grouped by product.
+- **Tables**: `dim_order_review`, `dim_product`
+- **Logic**:
+  - Aggregate average star rating per product.
 
 **Q2: Extract Common Themes from Reviews**
-- **Tables**: `product_reviews`
-- **Logic**: Apply topic modelling to review text.
+- **Tables**: `dim_order_review`
+- **Logic**:
+  - Apply topic modelling (e.g. LDA) on review comments.
 
 **Q3: Auto-Summarise Reviews Using LLM**
-- **Tables**: `product_reviews`
-- **Logic**: Generate summary text using LLM per product.
+- **Tables**: `dim_order_review`
+- **Logic**:
+  - Generate product-level review summaries with LLM integration.
 
 **Q4: Review Classification by Intent**
-- **Tables**: `product_reviews`
-- **Logic**: Categorise review purpose (complaint, praise, etc.) using zero/few-shot classification.
+- **Tables**: `dim_order_review`
+- **Logic**:
+  - Use ML classifiers or few-shot prompting to categorise reviews (complaints, praise, feature requests).
 
 **Q5: Generate FAQ from Reviews (RAG)**
-- **Tables**: `product_reviews`
-- **Logic**: Index reviews for similarity search and respond to natural language queries.
+- **Tables**: `dim_order_review`
+- **Logic**:
+  - Use Retrieval-Augmented Generation on indexed reviews to respond to natural language queries.
 
 ---
 
 ## 🔁 6. Cross-Domain Strategy
 
 **Q1: Correlate Campaigns with Long-Term LTV**
-- **Tables**: `web_events`, `transactions`, `customers`
-- **Logic**: Compare cohorts exposed to campaigns vs control on LTV outcomes.
+- **Tables**: `fact_orders`, `dim_customer`
+- **Logic**:
+  - Add campaign exposure flags (if available) on customers.
+  - Compare LTV across exposed vs control groups.
 
 **Q2: Conversion Dropoff After Product Views**
-- **Tables**: `web_events`, `transactions`, `products`
-- **Logic**: Identify products with high views but low purchases.
+- **Tables**: *Dependent on web events data availability*
+- **Logic**:
+  - Analyse products with high view counts but low purchase rates.
 
 **Q3: Recommend Products Based on Review Similarity**
-- **Tables**: `product_reviews`, `transactions`
-- **Logic**: Compute text embeddings for reviews; recommend similar items based on vector similarity.
+- **Tables**: `dim_order_review`, `fact_order_items`
+- **Logic**:
+  - Compute embeddings for reviews.
+  - Recommend products with similar review profiles using vector similarity.

@@ -1,0 +1,148 @@
+version: 2
+
+models:
+  - name: fct_orders
+    description: ""
+    columns:
+      - name: order_key
+        data_type: text
+        description: ""
+        test:
+          - not_null
+          - unique
+
+      - name: customer_key
+        data_type: text
+        description: ""
+        test:
+          - not_null
+
+      - name: order_id
+        data_type: text
+        description: "The unique identifier for each order."
+        test:
+          - not_null
+
+      - name: item_count
+        data_type: bigint
+        description: ""
+
+      - name: total_order_price
+        data_type: double precision
+        description: ""
+
+      - name: total_freight_price
+        data_type: double precision
+        description: ""
+
+      - name: min_shipping_limit_date
+        data_type: date
+        description: ""
+
+      - name: max_shipping_limit_date
+        data_type: date
+        description: ""
+
+      - name: order_timestamp
+        data_type: timestamp without time zone
+        description: "Shows the purchase timestamp."
+
+      - name: payment_approved_date
+        data_type: date
+        description: "Shows the payment approval timestamp."
+
+      - name: delivered_to_carrier_date
+        data_type: date
+        description: "Shows the order posting timestamp. When it was handled to the logistic partner."
+
+      - name: delivered_to_customer_date
+        data_type: date
+        description: "Shows the actual order delivery date to the customer."
+
+      - name: estimated_delivery_date
+        data_type: date
+        description: "Shows the estimated delivery date that was informed to customer at the purchase moment"
+
+      - name: order_status
+        data_type: text
+        description: "Reference to the order status (delivered, shipped, etc)"
+
+  - name: fct_order_items
+    description: ""
+    columns:
+      - name: order_item_key
+        data_type: text
+        description: ""
+        test:
+          - not_null
+          - unique
+
+      - name: order_id
+        data_type: text
+        description: ""
+        test:
+          - not_null
+
+      - name: order_item_id
+        data_type: integer
+        description: ""
+
+      - name: item_price
+        data_type: double precision
+        description: ""
+
+      - name: freight_price
+        data_type: double precision
+        description: ""
+
+      - name: shipping_limit_date
+        data_type: date
+        description: ""
+
+      - name: order_timestamp
+        data_type: timestamp without time zone
+        description: ""
+
+      - name: product_key
+        data_type: text
+        description: ""
+        test:
+          - not_null
+
+      - name: seller_key
+        data_type: text
+        description: ""
+        test:
+          - not_null
+
+  - name: fct_payments
+    description: ""
+    columns:
+      - name: payment_key
+        data_type: text
+        description: ""
+        test:
+          - not_null
+          - unique
+
+      - name: order_key
+        data_type: text
+        description: ""
+        test:
+          - not_null
+
+      - name: sequence_id
+        data_type: integer
+        description: "a customer may pay an order with more than one payment method. If he does so, a sequence will be created to"
+
+      - name: payment_type
+        data_type: text
+        description: "method of payment chosen by the customer."
+
+      - name: num_of_installments
+        data_type: integer
+        description: "number of installments chosen by the customer."
+
+      - name: amount
+        data_type: double precision
+        description: "transaction value."

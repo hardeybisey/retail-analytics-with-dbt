@@ -1,0 +1,36 @@
+services:
+  db:
+    image: postgres:15
+    container_name: postgres-db
+    environment:
+      POSTGRES_USER: ${PG_USER}
+      POSTGRES_PASSWORD: ${PG_PASSWORD}
+      POSTGRES_DB: retail_analytics
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  dbt:
+    build:
+      context: ./docker
+      dockerfile: Dockerfile.dbt
+    container_name: dbt-container
+    ports:
+      - "8080:8080"
+    environment:
+      DBT_PROFILES_DIR: /usr/app/retail_analytics
+      DBT_PROJECT_DIR: /usr/app/retail_analytics
+      PG_USER: ${PG_USER}
+      PG_PASSWORD: ${PG_PASSWORD}
+      PG_HOST: db
+    stdin_open: true
+    tty: true
+
+    volumes:
+      - ./retail_analytics:/usr/app/retail_analytics
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:
