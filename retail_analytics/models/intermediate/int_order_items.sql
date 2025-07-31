@@ -1,14 +1,14 @@
 WITH order_item_base AS (
 
     SELECT
+        {{ dbt_utils.generate_surrogate_key(["order_id", "order_item_id"]) }} AS order_item_key,
         order_id,
         order_item_id,
         product_id,
         seller_id,
         item_price,
         freight_price,
-        shipping_limit_date,
-        {{ dbt_utils.generate_surrogate_key(["order_id", "order_item_id"]) }} AS order_item_key
+        shipping_limit_date
 
     FROM {{ ref('stg_order_items') }}
 

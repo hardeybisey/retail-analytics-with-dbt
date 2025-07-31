@@ -6,7 +6,7 @@ WITH source AS (
 
 ),
 
-renamed AS (
+deduplicated_products AS (
 
     SELECT
         product_id,
@@ -17,10 +17,12 @@ renamed AS (
         product_length_cm::integer AS length_cm,
         product_height_cm::integer AS height_cm,
         product_width_cm::integer AS width_cm,
+        row_number() OVER (PARTITION BY product_id) AS row_num,
         upper(product_category_name) AS category_name
 
     FROM source
 
 )
 
-SELECT * FROM renamed
+SELECT * FROM deduplicated_products
+WHERE row_num = 1

@@ -6,7 +6,7 @@ WITH source AS (
 
 ),
 
-renamed AS (
+deduplicated_order_reviews AS (
 
     SELECT
         review_id,
@@ -15,10 +15,12 @@ renamed AS (
         review_comment_title AS title,
         review_comment_message AS message,
         review_creation_date::date AS creation_date,
-        review_answer_timestamp::date AS response_date
+        review_answer_timestamp::date AS response_date,
+        row_number() OVER (PARTITION BY order_id) AS row_num
 
     FROM source
 
 )
 
-SELECT * FROM renamed
+SELECT * FROM deduplicated_order_reviews
+WHERE row_num = 1

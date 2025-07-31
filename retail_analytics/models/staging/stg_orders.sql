@@ -8,7 +8,7 @@ WITH source AS (
     SELECT * FROM {{ source('csv_input', 'olist_orders') }}
 ),
 
-renamed AS (
+deduplicated_orders AS (
 
     SELECT
         order_id,
@@ -18,10 +18,12 @@ renamed AS (
         order_delivered_carrier_date::date AS delivered_to_carrier_date,
         order_delivered_customer_date::date AS delivered_to_customer_date,
         order_estimated_delivery_date::date AS estimated_delivery_date,
+        row_number() OVER (PARTITION BY order_id) AS row_num,
         upper(order_status) AS order_status
 
     FROM source
 
 )
 
-SELECT * FROM renamed
+SELECT * FROM deduplicated_orders
+WHERE row_num = 1

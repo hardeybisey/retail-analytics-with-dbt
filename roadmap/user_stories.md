@@ -3,13 +3,10 @@
 
 ## 🧍‍♂️ 1. Customer Analytics
 
-**Q1: Track Active Customers by Region and Time**
+**Q1: Track Monthly Active Customers by City**
 - **User Story**: As a growth manager, I want to track the number of active customers by region over time to assess marketing campaign effectiveness.
 - **Tables**: `dim_customer`, `dim_geolocation`, `dim_date`, `fact_orders`
 - **Logic**:
-  - Join `fact_orders` with `dim_customer` on `customer_key` to get customer activity.
-  - Join `dim_customer` to `dim_geolocation` via zip code prefix or region.
-  - Use `dim_date` to group orders by order date (month or week).
   - Count distinct active customers per region and time period.
 
 **Q2: Calculate Retention by Cohort**
