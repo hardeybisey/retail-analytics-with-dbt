@@ -21,6 +21,13 @@ deduplicated_order_reviews AS (
     FROM source
 
 )
-
-SELECT * FROM deduplicated_order_reviews
+SELECT
+    review_id,
+    order_id,
+    score,
+    title,
+    message,
+    creation_date,
+    response_date
+FROM deduplicated_order_reviews
 WHERE row_num = 1

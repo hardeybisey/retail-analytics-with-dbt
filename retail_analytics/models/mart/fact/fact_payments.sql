@@ -1,4 +1,6 @@
-{{ config(tags = ['payment']) }}
+{{
+    config(tags = ['payment'])
+}}
 WITH base AS (
     SELECT
         *,
@@ -14,4 +16,4 @@ SELECT
     b.num_of_installments,
     b.amount
 FROM base AS b
-LEFT JOIN {{ ref('fct_orders') }} AS o ON b.order_id = o.order_id
+LEFT JOIN {{ ref('fact_orders') }} AS o ON b.order_id = o.order_id

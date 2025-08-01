@@ -1,174 +1,102 @@
 # 📊 Retail Intelligence Analytics User Stories & Technical Solutions
 ---
 
-## 🧍‍♂️ 1. Customer Analytics
-
-**Q1: Track Monthly Active Customers by City**
-- **User Story**: As a growth manager, I want to track the number of active customers by region over time to assess marketing campaign effectiveness.
-- **Tables**: `dim_customer`, `dim_geolocation`, `dim_date`, `fact_orders`
-- **Logic**:
-  - Count distinct active customers per region and time period.
-
-**Q2: Calculate Retention by Cohort**
-- **User Story**: As a CRM analyst, I want to calculate retention rates for customer cohorts to measure engagement.
-- **Tables**: `dim_customer`, `fact_orders`, `dim_date`
-- **Logic**:
-  - Define cohorts by customers’ signup date (using `dim_customer` or inferred from first order date in `fact_orders`).
-  - Track repeat orders across subsequent time periods using `dim_date`.
-  - Calculate retention as percentage of cohort ordering again.
-
-**Q3: AOV by Segment**
-- **User Story**: As a business analyst, I want to analyse average order value across customer segments to drive personalisation.
-- **Tables**: `fact_orders`, `dim_customer`
-- **Logic**:
-  - Aggregate order totals from `fact_orders`.
-  - Join with `dim_customer` to segment by region, customer tier, or other demographic.
-  - Compute average order value per segment.
-
-**Q4: Top Products per Loyalty Tier**
-- **Tables**: `fact_order_items`, `fact_orders`, `dim_customer`, `dim_product`
-- **Logic**:
-  - Join `fact_order_items` with `fact_orders` to get `customer_key`.
-  - Join to `dim_customer` for loyalty tier info.
-  - Aggregate product purchase counts by tier.
-  - Rank products per tier by frequency.
-
-**Q5: RFM Segmentation**
-- **Tables**: `fact_orders`
-- **Logic**:
-  - For each `customer_key` calculate:
-    - Recency = days since last order (using `dim_date`).
-    - Frequency = count of orders in a period.
-    - Monetary = sum of order values.
-  - Assign customers into RFM segments based on thresholds.
-
-**Q6: Lifetime Value by Cohort**
-- **Tables**: `fact_orders`, `dim_customer`, `dim_date`
-- **Logic**:
-  - Aggregate total revenue per customer over their lifetime.
-  - Group customers by cohort (signup or first order date).
-  - Analyse trends in LTV across cohorts.
+Given your queries are joining fact tables with rich dimensional attributes (customer, region, seller, product, date), you're primed for **exploratory and performance-monitoring dashboards**. Below is a breakdown of **high-impact charts** you can generate from each query.
 
 ---
 
-## 📦 2. Product Analytics
+## 📊 From Query 1: `fact_orders` + `dim_customer` + `dim_region` + `dim_date`
 
-**Q1: Revenue per Unit**
-- **User Story**: As a category manager, I want to identify products generating the most revenue per unit sold.
-- **Tables**: `fact_order_items`, `dim_product`
-- **Logic**:
-  - Sum revenue (`price * quantity`) and units sold per product.
-  - Compute revenue per unit = total revenue / total units.
+### Use Case: **Customer/Region-Level Order Analysis**
 
-**Q2: Category Conversion Rate**
-- **Tables**: `fact_order_items`, `dim_product`, `dim_product_category`
-- **Logic**:
-  - Join product views (if tracked) with product categories.
-  - Compare category-level product views to actual purchases (`fact_order_items`).
-  - Calculate conversion rate = purchases / views per category.
+### ✅ Recommended Charts:
 
-**Q3: Review Sentiment Trend by Product**
-- **Tables**: `dim_order_review`, `dim_product`
-- **Logic**:
-  - Join reviews with products.
-  - Aggregate sentiment scores or star ratings by product and time period.
+1. **Orders Over Time by Region**
 
-**Q4: Price Elasticity of Top SKUs**
-- **Tables**: `fact_order_items`, `dim_product`, `dim_date`
-- **Logic**:
-  - Analyse sales volume and price changes over time per product.
-  - Use regression to estimate elasticity.
+   * **Chart**: Line chart or area chart
+   * **X-axis**: `dd.date_day` or `dd.month`
+   * **Series**: `dl.state` or `dl.city`
+   * **Metric**: `COUNT(fo.order_id)` or `SUM(order_value)`
 
-**Q5: Product Bundle Frequency**
-- **Tables**: `fact_order_items`
-- **Logic**:
-  - Use basket analysis on `order_key` grouped items to find frequent co-purchases.
+2. **Order Count by Loyalty Tier**
 
-**Q6: Polarised Products**
-- **Tables**: `dim_order_review`
-- **Logic**:
-  - Identify products with high counts of both 1-star and 5-star reviews.
-  - Use proportions or thresholds.
+   * **Chart**: Bar chart or horizontal bar chart
+   * **X-axis**: `dc.loyalty_tier`
+   * **Metric**: `COUNT(fo.order_id)` or `AVG(order_value)`
 
----
+3. **Choropleth: Orders or Revenue by State**
 
-## 💳 3. Transactions & Sales
+   * **Chart**: Map (if Superset or Looker supports UK/BR states)
+   * **Location**: `dl.state`
+   * **Metric**: `SUM(order_value)` or `COUNT(order_id)`
 
-**Q1: Sales Trends by Region and Time**
-- **Tables**: `fact_orders`, `dim_customer`, `dim_geolocation`, `dim_date`
-- **Logic**:
-  - Join orders to customers and customers to geolocation.
-  - Aggregate revenue by region and time period.
+4. **Customer LTV Distribution by Region**
 
-**Q2: AOV Over Time**
-- **Tables**: `fact_orders`, `dim_date`
-- **Logic**:
-  - Calculate average order value grouped by order date (day/month).
+   * **Chart**: Box plot or histogram
+   * **X-axis**: `dl.state`
+   * **Metric**: `SUM(order_value) OVER (PARTITION BY dc.customer_key)`
 
-**Q3: First-time vs Repeat Purchase**
-- **Tables**: `fact_orders`
-- **Logic**:
-  - Identify first order per customer (minimum order date).
-  - Classify subsequent orders as repeat.
+5. **Cohort Retention Heatmap**
 
-**Q4: Product Co-occurrence Matrix**
-- **Tables**: `fact_order_items`
-- **Logic**:
-  - For each order, identify pairs of products purchased together.
-  - Aggregate counts to build co-occurrence matrix.
-
-**Q5: Inventory Shortage Detector**
-- **Tables**: `dim_product`, `fact_order_items`
-- **Logic**:
-  - Compare inventory levels from `dim_product` to recent sales volume in `fact_order_items`.
-  - Flag products with low inventory vs demand.
+   * **Chart**: Heatmap
+   * **X-axis**: `customer_signup_month`
+   * **Y-axis**: `months_since_signup`
+   * **Metric**: `retained_customers / total_customers`
 
 ---
 
-## ⭐ 5. Review & GenAI / LLM Analytics
+## 📊 From Query 2: `fact_order_items` + `dim_product` + `dim_seller` + `dim_region` + `dim_date`
 
-**Q1: Average Review Rating by Product**
-- **Tables**: `dim_order_review`, `dim_product`
-- **Logic**:
-  - Aggregate average star rating per product.
+### Use Case: **Product/Seller-Level Performance Monitoring**
 
-**Q2: Extract Common Themes from Reviews**
-- **Tables**: `dim_order_review`
-- **Logic**:
-  - Apply topic modelling (e.g. LDA) on review comments.
+### ✅ Recommended Charts:
 
-**Q3: Auto-Summarise Reviews Using LLM**
-- **Tables**: `dim_order_review`
-- **Logic**:
-  - Generate product-level review summaries with LLM integration.
+1. **Top Selling Products by Category**
 
-**Q4: Review Classification by Intent**
-- **Tables**: `dim_order_review`
-- **Logic**:
-  - Use ML classifiers or few-shot prompting to categorise reviews (complaints, praise, feature requests).
+   * **Chart**: Treemap or bar chart
+   * **X-axis**: `dp.product_category_name`
+   * **Metric**: `SUM(foi.item_price)` or `COUNT(foi.order_item_id)`
 
-**Q5: Generate FAQ from Reviews (RAG)**
-- **Tables**: `dim_order_review`
-- **Logic**:
-  - Use Retrieval-Augmented Generation on indexed reviews to respond to natural language queries.
+2. **Revenue Trend by Seller Region**
+
+   * **Chart**: Line chart or stacked area chart
+   * **X-axis**: `dd.month`
+   * **Series**: `dr.state` or `dr.city`
+   * **Metric**: `SUM(foi.item_price + foi.freight_price)`
+
+3. **Freight Cost Share by Product Category**
+
+   * **Chart**: Stacked bar or pie chart
+   * **Categories**: `dp.product_category_name`
+   * **Metric**: `SUM(foi.freight_price) / SUM(foi.item_price + foi.freight_price)`
+
+4. **Product Price vs Freight Cost**
+
+   * **Chart**: Scatter plot
+   * **X-axis**: `AVG(foi.item_price)`
+   * **Y-axis**: `AVG(foi.freight_price)`
+   * **Size**: `COUNT(foi.order_item_id)`
+   * **Colour**: `dp.product_category_name`
+
+5. **Seller Performance Heatmap**
+
+   * **Chart**: Heatmap
+   * **X-axis**: `ds.seller_id`
+   * **Y-axis**: `dd.week`
+   * **Metric**: `SUM(foi.item_price + foi.freight_price)`
 
 ---
 
-## 🔁 6. Cross-Domain Strategy
+## 🧠 Tool-Specific Notes
 
-**Q1: Correlate Campaigns with Long-Term LTV**
-- **Tables**: `fact_orders`, `dim_customer`
-- **Logic**:
-  - Add campaign exposure flags (if available) on customers.
-  - Compare LTV across exposed vs control groups.
+If you're using **Superset**:
 
-**Q2: Conversion Dropoff After Product Views**
-- **Tables**: *Dependent on web events data availability*
-- **Logic**:
-  - Analyse products with high view counts but low purchase rates.
+* Use **time grain** and **filters** in the Explore interface to group by week/month.
+* For maps, ensure `region` or `zip_code` matches the format expected by your geospatial layer.
 
-**Q3: Recommend Products Based on Review Similarity**
-- **Tables**: `dim_order_review`, `fact_order_items`
-- **Logic**:
-  - Compute embeddings for reviews.
-  - Recommend products with similar review profiles using vector similarity.
+If you're using **Looker**, **Power BI**, or **Tableau**, you can use **LOD expressions** or **table calcs** to create metrics like LTV, AOV, etc., and **parameter controls** for slicing by seller/product/region.
+
+---
+
+**Follow Up:**
+**Would you like a dashboard wireframe that arranges these charts into a layout designed for e-commerce ops, finance, or growth teams?**

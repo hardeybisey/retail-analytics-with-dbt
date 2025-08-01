@@ -23,6 +23,15 @@ deduplicated_products AS (
     FROM source
 
 )
-
-SELECT * FROM deduplicated_products
+SELECT
+    product_id,
+    name_length,
+    description_length,
+    photos_qty,
+    weight_g,
+    length_cm,
+    height_cm,
+    width_cm,
+    category_name
+FROM deduplicated_products
 WHERE row_num = 1

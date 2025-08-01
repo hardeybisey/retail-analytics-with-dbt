@@ -40,7 +40,7 @@ The dataset contains real commercial data from Olist, the largest department sto
 |--------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------|
 | **Customers**            | Contains customer information and location. Use `customer_id` to identify unique orders and `customer_unique_id` to identify repeat purchasers.                                            | `customer_id`, `customer_unique_id`, `customer_zip_code_prefix`, `customer_city`, `customer_state` |
 | **Geolocation**          | Brazilian zip codes with latitude and longitude. Useful for mapping and distance calculations between customer and seller locations.                                                       | `geolocation_zip_code_prefix`, `geolocation_lat`, `geolocation_lng`, `geolocation_city`, `geolocation_state` |
-| **Order Items**          | Data on each item within an order. Includes quantity, price, and freight for each item.                                                                                                    | `order_id`, `order_item_id`, `product_id`, `seller_id`, `shipping_limit_date`, `price`, `freight_value` |
+| **Order Items**          | Data on each item within an order. Includes quantity, value, and freight for each item.                                                                                                    | `order_id`, `order_item_id`, `product_id`, `seller_id`, `shipping_limit_date`, `price`, `freight_value` |
 | **Payments**             | Details payment methods used per order. Orders can have multiple payments using different methods.                                                                                         | `order_id`, `payment_sequential`, `payment_type`, `payment_installments`, `payment_value` |
 | **Reviews**        | Customer reviews post-delivery or after the expected delivery date. Includes ratings and textual feedback.                                                                                 | `review_id`, `order_id`, `review_score`, `review_comment_title`, `review_comment_message`, `review_creation_date`, `review_answer_timestamp` |
 | **Orders**               | Core dataset linking to all others. Represents individual purchases and delivery timelines.                                                                                                | `order_id`, `customer_id`, `order_status`, `order_purchase_timestamp`, `order_approved_at`, `order_delivered_carrier_date`, `order_delivered_customer_date`, `order_estimated_delivery_date` |
@@ -62,7 +62,7 @@ The dataset contains real commercial data from Olist, the largest department sto
 | Table Name              | Type      | Grain                             | Description                                                              |
 |------------------------|-----------|-----------------------------------|--------------------------------------------------------------------------|
 | dim_customer           | Dimension | 1 row per customer_key      | Unique customer profile, independent of orders                           |
-| dim_geolocation        | Dimension | 1 row per zip code prefix         | Geographic mapping of zip codes to lat/lon, city, state                  |
+| dim_region        | Dimension | 1 row per zip code prefix         | Geographic mapping of zip codes to lat/lon, city, state                  |
 | dim_seller             | Dimension | 1 row per seller_key               | Seller metadata and location                                             |
 | dim_product            | Dimension | 1 row per product_key              | Product metadata and physical attributes                                 |
 | dim_product_category   | Dimension | 1 row per category name           | English translation of product categories                                |
@@ -76,7 +76,7 @@ The dataset contains real commercial data from Olist, the largest department sto
 | Table Name              | Type      | Grain                             | Description                                                              |
 |------------------------|-----------|-----------------------------------|--------------------------------------------------------------------------|
 | fact_orders            | Fact | 1 row per order_key                 | Order lifecycle: purchase, delivery, status                              |
-| fact_order_items       | Fact | 1 row per order_item_key(`order_id+item_id`)       | Item-level price, freight, product, seller                               |
+| fact_order_items       | Fact | 1 row per order_item_key(`order_id+item_id`)       | Item-level value, freight, product, seller                               |
 | fact_payments          | Fact | 1 row per payment_key(`order+payment_seq`)     | Multi-method or multi-installment payment data                           |
 
 ---

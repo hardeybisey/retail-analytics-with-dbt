@@ -6,8 +6,8 @@ WITH order_item_base AS (
         order_item_id,
         product_id,
         seller_id,
-        item_price,
-        freight_price,
+        item_value,
+        freight_value,
         shipping_limit_date
 
     FROM {{ ref('stg_order_items') }}
@@ -21,8 +21,8 @@ order_item_with_dates AS (
         oib.order_item_id,
         oib.product_id,
         oib.seller_id,
-        oib.item_price,
-        oib.freight_price,
+        oib.item_value,
+        oib.freight_value,
         oib.shipping_limit_date,
         ob.order_timestamp
     FROM order_item_base AS oib

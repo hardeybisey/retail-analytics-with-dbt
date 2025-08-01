@@ -1,4 +1,6 @@
-{{ config(tags = ['order']) }}
+{{
+    config(tags = ['order'])
+}}
 WITH orders_base AS (
     SELECT
         {{ dbt_utils.generate_surrogate_key(["order_id"]) }} AS order_key,
@@ -12,6 +14,7 @@ WITH orders_base AS (
         estimated_delivery_date,
         order_status
     FROM {{ ref('stg_orders') }}
+
 ),
 
 order_enriched AS (
@@ -20,8 +23,8 @@ order_enriched AS (
         cb.customer_key,
         ob.order_id,
         oib.item_count,
-        oib.total_order_price,
-        oib.total_freight_price,
+        oib.total_order_value,
+        oib.total_freight_value,
         ob.order_status,
 
         -- Joining with date dimensions
@@ -38,7 +41,7 @@ order_enriched AS (
         ON
             ob.customer_id = cb.customer_id
             AND ob.order_timestamp >= cb.valid_from AND (ob.order_timestamp < cb.valid_to OR cb.valid_to IS null)
-    LEFT JOIN {{ ref('int_order_item_aggregates') }} AS oib ON ob.order_id = oib.order_id
+    LEFT JOIN {{ ref('int_order_aggregates') }} AS oib ON ob.order_id = oib.order_id
     LEFT JOIN {{ ref('dim_date') }} AS odd ON ob.order_date = odd.date_day
     LEFT JOIN {{ ref('dim_date') }} AS padd ON ob.payment_approved_date = padd.date_day
     LEFT JOIN {{ ref('dim_date') }} AS dtcrdd ON ob.delivered_to_carrier_date = dtcrdd.date_day

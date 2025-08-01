@@ -21,7 +21,10 @@ first_order_date as (
 snapshots AS (
 
     SELECT *
-    FROM {{ ref('snapshot_sellers') }}
+    FROM {{ ref('snapshot_sellers') }} as s
+    {% if is_incremental() %}
+        WHERE s.dbt_modified_date > (SELECT max(t.dbt_modified_date) FROM {{ this }} AS t)
+    {% endif %}
 
 ),
 
@@ -50,9 +53,7 @@ dim AS (
     left join  first_order_date as fod on fod.seller_id = s.seller_id
     {% endif %}
 
-    {% if is_incremental() %}
-        WHERE s.dbt_modified_date > (SELECT max(t.dbt_modified_date) FROM {{ this }} AS t)
-    {% endif %}
+
 )
 
 SELECT * FROM dim

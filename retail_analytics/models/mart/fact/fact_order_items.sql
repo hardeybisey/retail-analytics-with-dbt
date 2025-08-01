@@ -1,4 +1,6 @@
-{{ config(tags = ['order']) }}
+{{
+    config(tags = ['order'])
+}}
 WITH order_items_base AS (
     SELECT
         order_item_key,
@@ -6,12 +8,12 @@ WITH order_items_base AS (
         order_item_id,
         product_id,
         seller_id,
-        item_price,
-        freight_price,
+        item_value,
+        freight_value,
         shipping_limit_date,
         order_timestamp,
         order_timestamp::date AS order_date
-    FROM {{ ref('int_order_items') }}
+    FROM {{ ref('int_order_items') }} oi
 ),
 
 order_item_enriched AS (
@@ -19,9 +21,8 @@ order_item_enriched AS (
         oi.order_item_key,
         oi.order_id,
         oi.order_item_id,
-        oi.item_price,
-        oi.freight_price,
-        oi.shipping_limit_date,
+        oi.item_value,
+        oi.freight_value,
         pd.product_key,
         sd.seller_key,
 

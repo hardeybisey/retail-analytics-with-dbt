@@ -22,7 +22,10 @@ first_order_date as (
 snapshots AS (
 
     SELECT *
-    FROM {{ ref('snapshot_customers') }}
+    FROM {{ ref('snapshot_customers') }} s
+    {% if is_incremental() %}
+        WHERE s.dbt_modified_date > (SELECT max(t.dbt_modified_date) FROM {{ this }} AS t)
+    {% endif %}
 
 ),
 
@@ -51,10 +54,6 @@ dim AS (
     LEFT JOIN {{ ref('dim_region') }} AS r ON s.zip_code_prefix = r.zip_code_prefix
     {% if not is_incremental() %}
     left join  first_order_date as fod on fod.customer_id = s.customer_id
-    {% endif %}
-
-    {% if is_incremental() %}
-        WHERE s.dbt_modified_date > (SELECT max(t.dbt_modified_date) FROM {{ this }} AS t)
     {% endif %}
 
 )

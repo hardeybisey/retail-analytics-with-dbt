@@ -16,6 +16,8 @@ clean-targets:
 
 vars:
   "dbt_date:time_zone": "Europe/London"
+  start_date: "2016-01-01"
+  end_date: "2018-12-31"
 
 models:
   retail_analytics:
@@ -26,7 +28,7 @@ models:
       +schema: staging
       +tags: ['staging']
     intermediate:
-      +materialized: ephemeral
+      +materialized: table
       +schema: intermediate
       +tags: ['intermediate']
     mart:
