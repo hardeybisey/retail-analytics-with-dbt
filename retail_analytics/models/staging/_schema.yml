@@ -157,7 +157,7 @@ models:
         tests:
           - not_null
           - accepted_values:
-              values: ['created', 'approved', 'invoiced', 'processing', 'shipped', 'delivered', 'returned', 'canceled']
+              values: ['SHIPPED', 'UNAVAILABLE', 'CREATED', 'DELIVERED', 'INVOICED', 'CANCELED', 'PROCESSING', 'APPROVED']
       - name: order_timestamp
         data_type: timestamp without time zone
         description: "Shows the purchase timestamp."

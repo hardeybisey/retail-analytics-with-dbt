@@ -29,9 +29,7 @@ dim AS (
     SELECT
         {{ dbt_utils.generate_surrogate_key(["s.seller_id", "s.valid_from"]) }} AS seller_key,
         s.seller_id,
-        s.zip_code_prefix,
-        s.city,
-        s.state,
+        r.region_key,
         -- We are doing this because the valid_from and valid_to provided by the snapshot are generated
         -- based on the first model run, which doesn't align with our order table's timestamps.
         -- In a real-world scenario, a seller must have existed before they fulfil their first order.
@@ -47,6 +45,7 @@ dim AS (
         s.dbt_modified_date
 
     FROM snapshots AS s
+    LEFT JOIN {{ ref('dim_region') }} AS r ON s.zip_code_prefix = r.zip_code_prefix
     {% if not is_incremental() %}
     left join  first_order_date as fod on fod.seller_id = s.seller_id
     {% endif %}

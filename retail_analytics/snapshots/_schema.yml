@@ -17,12 +17,6 @@ snapshots:
           - relationships:
               to: ref('stg_geolocation')
               field: zip_code_prefix
-      - name: city
-        data_type: text
-        description: "seller city name"
-      - name: state
-        data_type: text
-        description: "seller state"
       - name: valid_from
         data_type: timestamp
         description: "start date of the customer record"
@@ -59,12 +53,6 @@ snapshots:
               to: ref('stg_geolocation')
               field: zip_code_prefix
           - not_null
-      - name: city
-        data_type: text
-        description: "customer city name"
-      - name: state
-        data_type: text
-        description: "customer state"
       - name: valid_from
         data_type: timestamp
         description: "start date of the customer record"

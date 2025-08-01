@@ -31,9 +31,7 @@ dim AS (
         {{ dbt_utils.generate_surrogate_key(["s.customer_id", "s.valid_from"]) }} AS customer_key,
         s.customer_id,
         s.customer_unique_id,
-        s.zip_code_prefix,
-        s.city,
-        s.state,
+        r.region_key,
         -- We are doing this because the valid_from and valid_to provided by the snapshot are generated
         -- based on the first model run, which doesn't align with our order table's timestamps.
         -- In a real-world scenario, a customer must have existed before they placed their first order.
@@ -50,6 +48,7 @@ dim AS (
         s.dbt_modified_date
 
     FROM snapshots AS s
+    LEFT JOIN {{ ref('dim_region') }} AS r ON s.zip_code_prefix = r.zip_code_prefix
     {% if not is_incremental() %}
     left join  first_order_date as fod on fod.customer_id = s.customer_id
     {% endif %}
@@ -57,6 +56,7 @@ dim AS (
     {% if is_incremental() %}
         WHERE s.dbt_modified_date > (SELECT max(t.dbt_modified_date) FROM {{ this }} AS t)
     {% endif %}
+
 )
 
 SELECT * FROM dim
