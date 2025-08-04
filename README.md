@@ -1,11 +1,10 @@
 # Retail Analytics with DBT
 
-This purpose of this project is to develop an analytics data warehouse for an E-commerce store. The model developed will be iterated over
-using different tools and technology.
+The goal of this project is to design and implement an analytics data warehouse for an e-commerce store. The data model will be iteratively enhanced using a variety of tools, frameworks, and architectural patterns.
 
-The field of Analytics and Data Engineering is fast moving, and often times being able to solve the same problem using different approach is a skill that has a log of benefits. The idea behing this project is to answer the same analytics questions using different approaches, tools, and technology.
+Given the fast-evolving nature of Analytics and Data Engineering, the ability to approach the same problem from multiple angles is a highly valuable skill. This project is structured around solving a consistent set of business questions using different technologies and methodologies — allowing for a comparative, hands-on exploration of modern data engineering practices.
 
-This project is intended for my personal development but I will be documenting it so anyone can pick up the project and learn from it.
+While the primary motivation is personal development, all work will be documented to ensure the project is accessible and educational for others interested in learning or upskilling in this domain.
 
 This same dataset is used in the following projects:
 - [Retail Analytics with Spark](https://github.com/hardeybisey/retail-analytics-with-spark)
