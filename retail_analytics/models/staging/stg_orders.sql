@@ -20,10 +20,17 @@ deduplicated_orders AS (
         order_estimated_delivery_date::date AS estimated_delivery_date,
         row_number() OVER (PARTITION BY order_id) AS row_num,
         upper(order_status) AS order_status
-
     FROM source
-
 )
 
-SELECT * FROM deduplicated_orders
+SELECT
+    order_id,
+    customer_id,
+    order_timestamp,
+    payment_approved_date,
+    delivered_to_carrier_date,
+    delivered_to_customer_date,
+    estimated_delivery_date,
+    order_status
+FROM deduplicated_orders
 WHERE row_num = 1

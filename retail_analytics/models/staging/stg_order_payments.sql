@@ -19,5 +19,12 @@ deduplicated_order_payments AS (
 
 )
 
-SELECT * FROM deduplicated_order_payments
+SELECT
+    order_id,
+    sequence_id,
+    num_of_installments,
+    amount,
+    row_num,
+    payment_type
+FROM deduplicated_order_payments
 WHERE row_num = 1

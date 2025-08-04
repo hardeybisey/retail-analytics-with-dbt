@@ -28,7 +28,7 @@ This same dataset is used in the following projects:
 ## Data Context
 The dataset contains real commercial data from Olist, the largest department store in Brazilian marketplaces. It includes information from nearly 100,000 orders placed between 2016 and 2018. The data is anonymized and covers various aspects of the e-commerce lifecycle.
 
-### **Data Schema**
+-m "### **Raw Data Schema**
 ![](images/HRhd2Y0.png)
 
 ---
@@ -40,7 +40,7 @@ The dataset contains real commercial data from Olist, the largest department sto
 |--------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------|
 | **Customers**            | Contains customer information and location. Use `customer_id` to identify unique orders and `customer_unique_id` to identify repeat purchasers.                                            | `customer_id`, `customer_unique_id`, `customer_zip_code_prefix`, `customer_city`, `customer_state` |
 | **Geolocation**          | Brazilian zip codes with latitude and longitude. Useful for mapping and distance calculations between customer and seller locations.                                                       | `geolocation_zip_code_prefix`, `geolocation_lat`, `geolocation_lng`, `geolocation_city`, `geolocation_state` |
-| **Order Items**          | Data on each item within an order. Includes quantity, price, and freight for each item.                                                                                                    | `order_id`, `order_item_id`, `product_id`, `seller_id`, `shipping_limit_date`, `price`, `freight_value` |
+| **Order Items**          | Data on each item within an order. Includes quantity, value, and freight for each item.                                                                                                    | `order_id`, `order_item_id`, `product_id`, `seller_id`, `shipping_limit_date`, `price`, `freight_value` |
 | **Payments**             | Details payment methods used per order. Orders can have multiple payments using different methods.                                                                                         | `order_id`, `payment_sequential`, `payment_type`, `payment_installments`, `payment_value` |
 | **Reviews**        | Customer reviews post-delivery or after the expected delivery date. Includes ratings and textual feedback.                                                                                 | `review_id`, `order_id`, `review_score`, `review_comment_title`, `review_comment_message`, `review_creation_date`, `review_answer_timestamp` |
 | **Orders**               | Core dataset linking to all others. Represents individual purchases and delivery timelines.                                                                                                | `order_id`, `customer_id`, `order_status`, `order_purchase_timestamp`, `order_approved_at`, `order_delivered_carrier_date`, `order_delivered_customer_date`, `order_estimated_delivery_date` |
@@ -50,19 +50,23 @@ The dataset contains real commercial data from Olist, the largest department sto
 
 ---
 
-## Data Layers
+## Analytics Data Layers
 * `staging`: Raw Data with light transformation
 * `intermediate`: Shared Data Between Model
 * `mart`:Analytics Ready Data
+* `reports`: Views with prepagrregated joins on mart layer.
 
 ---
 
+## Analytics Data Model
+![](images/dim_model.svg)
+---
 
 ### Dimension
 | Table Name              | Type      | Grain                             | Description                                                              |
 |------------------------|-----------|-----------------------------------|--------------------------------------------------------------------------|
 | dim_customer           | Dimension | 1 row per customer_key      | Unique customer profile, independent of orders                           |
-| dim_geolocation        | Dimension | 1 row per zip code prefix         | Geographic mapping of zip codes to lat/lon, city, state                  |
+| dim_region        | Dimension | 1 row per zip code prefix         | Geographic mapping of zip codes to lat/lon, city, state                  |
 | dim_seller             | Dimension | 1 row per seller_key               | Seller metadata and location                                             |
 | dim_product            | Dimension | 1 row per product_key              | Product metadata and physical attributes                                 |
 | dim_product_category   | Dimension | 1 row per category name           | English translation of product categories                                |
@@ -76,7 +80,7 @@ The dataset contains real commercial data from Olist, the largest department sto
 | Table Name              | Type      | Grain                             | Description                                                              |
 |------------------------|-----------|-----------------------------------|--------------------------------------------------------------------------|
 | fact_orders            | Fact | 1 row per order_key                 | Order lifecycle: purchase, delivery, status                              |
-| fact_order_items       | Fact | 1 row per order_item_key(`order_id+item_id`)       | Item-level price, freight, product, seller                               |
+| fact_order_items       | Fact | 1 row per order_item_key(`order_id+item_id`)       | Item-level value, freight, product, seller                               |
 | fact_payments          | Fact | 1 row per payment_key(`order+payment_seq`)     | Multi-method or multi-installment payment data                           |
 
 ---
@@ -99,6 +103,8 @@ docker ps
 
 # 5. Open a shell session into the dbt container
 docker exec -it dbt bash
+
+# 6. Unzip the `data.zip` file in the root of the repo and copy it's content into the dbt project seeds `retail-analytics-with-dbt/retail_analytics/seeds` folder
 ```
 
 ### Running the dbt model
@@ -107,7 +113,7 @@ Inside the dbt container, run the following commands in order:
 # 1. Install dbt dependencies (e.g., packages from packages.yml)
 dbt deps
 
-# 2. Load CSV files from the `data/` folder into Postgres as seed data
+# 2. Load CSV files from into Postgres as seed data
 dbt seed
 
 # 3. Apply snapshot logic (for SCD Type 2 tables like `customers` and `sellers`)

@@ -4,7 +4,7 @@ with base as (
     select
         {{ dbt_utils.generate_surrogate_key(["review_id"]) }} as review_key,
         order_id,
-        -- score,
+        score,
         title,
         message,
         creation_date,

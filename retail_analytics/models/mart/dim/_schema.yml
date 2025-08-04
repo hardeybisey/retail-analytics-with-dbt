@@ -1,0 +1,322 @@
+version: 2
+
+models:
+  - name: dim_customer
+    description: ""
+    columns:
+      - name: customer_key
+        data_type: text
+        description: ""
+        tests:
+          - not_null
+          - unique
+
+      - name: customer_id
+        data_type: text
+        description: "key to the orders dataset. Each order has a unique customer_id."
+
+      - name: customer_unique_id
+        data_type: text
+        description: "The unique identifier for each customer."
+
+      - name: region_key
+        data_type: text
+        description: ""
+
+      - name: valid_from
+        data_type: timestamp without time zone
+        description: "start date of the customer record"
+
+      - name: valid_to
+        data_type: timestamp without time zone
+        description: "end date of the customer record, null if the record is current"
+
+      - name: is_current
+        data_type: boolean
+        description: ""
+
+      - name: dbt_modified_date
+        data_type: timestamp without time zone
+        description: "last modified date of the customer record"
+
+  - name: dim_region
+    description: ""
+    columns:
+      - name: region_key
+        data_type: text
+        description: ""
+        tests:
+          - not_null
+          - unique
+
+      - name: zip_code_prefix
+        data_type: integer
+        description: "first 5 digits of zip code."
+
+      - name: latitude
+        data_type: double precision
+        description: "latitude of the zip code location."
+
+      - name: longitude
+        data_type: double precision
+        description: "longitude of the zip code location."
+
+      - name: city
+        data_type: text
+        description: "city name of the zip code location."
+
+      - name: state
+        data_type: text
+        description: "state of the zip code location."
+
+  - name: dim_order_review
+    description: ""
+    columns:
+      - name: review_key
+        data_type: text
+        description: ""
+        tests:
+          - not_null
+          - unique
+
+      - name: order_id
+        data_type: text
+        description: "The unique identifier for each order."
+
+      - name: title
+        data_type: text
+        description: "Comment title from the review left by the customer, in Portuguese."
+
+      - name: message
+        data_type: text
+        description: "Comment message from the review left by the customer, in Portuguese."
+
+      - name: creation_date
+        data_type: date
+        description: "Shows the date in which the satisfaction survey was sent to the customer"
+
+      - name: response_date
+        data_type: date
+        description: "Shows satisfaction survey answer timestamp."
+
+  - name: dim_product
+    description: ""
+    columns:
+      - name: product_key
+        data_type: text
+        description: ""
+        tests:
+          - not_null
+          - unique
+
+      - name: product_id
+        data_type: text
+        description: "The unique identifier for each product."
+
+      - name: photos_qty
+        data_type: integer
+        description: "number of product published photos"
+
+      - name: weight_g
+        data_type: integer
+        description: "product weight measured in grams."
+
+      - name: length_cm
+        data_type: integer
+        description: "product length measured in centimeters."
+
+      - name: height_cm
+        data_type: integer
+        description: "product height measured in centimeters."
+
+      - name: width_cm
+        data_type: integer
+        description: "product width measured in centimeters."
+
+      - name: category_name
+        data_type: text
+        description: "The category of the product, in Portuguese."
+
+      - name: category_name_english
+        data_type: text
+        description: ""
+
+  - name: dim_seller
+    description: ""
+    columns:
+      - name: seller_key
+        data_type: text
+        description: ""
+        tests:
+          - not_null
+          - unique
+
+      - name: seller_id
+        data_type: text
+        description: "The unique identifier for each seller."
+
+      - name: region_key
+        data_type: text
+        description: ""
+
+      - name: valid_from
+        data_type: timestamp without time zone
+        description: "start date of the customer record"
+
+      - name: valid_to
+        data_type: timestamp without time zone
+        description: "end date of the customer record, null if the record is current"
+
+      - name: is_current
+        data_type: boolean
+        description: ""
+
+      - name: dbt_modified_date
+        data_type: timestamp without time zone
+        description: "last modified date of the customer record"
+
+  - name: dim_date
+    description: ""
+    columns:
+      - name: date_day
+        data_type: date
+        description: ""
+        tests:
+          - not_null
+          - unique
+
+      - name: prior_date_day
+        data_type: date
+        description: ""
+
+      - name: next_date_day
+        data_type: date
+        description: ""
+
+      - name: prior_year_date_day
+        data_type: date
+        description: ""
+
+      - name: prior_year_over_year_date_day
+        data_type: date
+        description: ""
+
+      - name: day_of_week
+        data_type: integer
+        description: ""
+
+      - name: day_of_week_name
+        data_type: text
+        description: ""
+
+      - name: day_of_week_name_short
+        data_type: text
+        description: ""
+
+      - name: day_of_month
+        data_type: double precision
+        description: ""
+
+      - name: day_of_year
+        data_type: double precision
+        description: ""
+
+      - name: week_start_date
+        data_type: date
+        description: ""
+
+      - name: week_end_date
+        data_type: date
+        description: ""
+
+      - name: prior_year_week_start_date
+        data_type: date
+        description: ""
+
+      - name: prior_year_week_end_date
+        data_type: date
+        description: ""
+
+      - name: week_of_year
+        data_type: integer
+        description: ""
+
+      - name: iso_week_start_date
+        data_type: date
+        description: ""
+
+      - name: iso_week_end_date
+        data_type: date
+        description: ""
+
+      - name: prior_year_iso_week_start_date
+        data_type: date
+        description: ""
+
+      - name: prior_year_iso_week_end_date
+        data_type: date
+        description: ""
+
+      - name: iso_week_of_year
+        data_type: integer
+        description: ""
+
+      - name: prior_year_week_of_year
+        data_type: integer
+        description: ""
+
+      - name: prior_year_iso_week_of_year
+        data_type: integer
+        description: ""
+
+      - name: month_of_year
+        data_type: integer
+        description: ""
+
+      - name: month_name
+        data_type: text
+        description: ""
+
+      - name: month_name_short
+        data_type: text
+        description: ""
+
+      - name: month_start_date
+        data_type: date
+        description: ""
+
+      - name: month_end_date
+        data_type: date
+        description: ""
+
+      - name: prior_year_month_start_date
+        data_type: date
+        description: ""
+
+      - name: prior_year_month_end_date
+        data_type: date
+        description: ""
+
+      - name: quarter_of_year
+        data_type: integer
+        description: ""
+
+      - name: quarter_start_date
+        data_type: date
+        description: ""
+
+      - name: quarter_end_date
+        data_type: date
+        description: ""
+
+      - name: year_number
+        data_type: integer
+        description: ""
+
+      - name: year_start_date
+        data_type: date
+        description: ""
+
+      - name: year_end_date
+        data_type: date
+        description: ""

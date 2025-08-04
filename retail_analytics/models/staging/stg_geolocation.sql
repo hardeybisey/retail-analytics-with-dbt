@@ -20,6 +20,11 @@ deduplicated_geolocations AS (
     FROM source
 
 )
-
-SELECT * FROM deduplicated_geolocations
+SELECT
+    zip_code_prefix,
+    latitude,
+    longitude,
+    city,
+    state
+FROM deduplicated_geolocations
 WHERE row_num = 1
