@@ -97,11 +97,11 @@ DB_PASSWORD=<your_postgres_password>
 # 3. Start Services with Docker
 docker compose up -d
 
-# 4. Check that the container is up, you should look for a container named `dbt`
+# 4. Check that the container is up, you should look for a container named `dbt-container`
 docker ps
 
 # 5. Open a shell session into the dbt container
-docker exec -it dbt bash
+docker exec -it dbt-container bash
 
 # 6. Unzip the `data.zip` file in the root of the repo and copy it's content into the dbt project seeds `retail-analytics-with-dbt/retail_analytics/seeds` folder
 ```
