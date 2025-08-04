@@ -28,7 +28,7 @@ This same dataset is used in the following projects:
 ## Data Context
 The dataset contains real commercial data from Olist, the largest department store in Brazilian marketplaces. It includes information from nearly 100,000 orders placed between 2016 and 2018. The data is anonymized and covers various aspects of the e-commerce lifecycle.
 
-### **Data Schema**
+-m "### **Raw Data Schema**
 ![](images/HRhd2Y0.png)
 
 ---
@@ -50,13 +50,17 @@ The dataset contains real commercial data from Olist, the largest department sto
 
 ---
 
-## Data Layers
+## Analytics Data Layers
 * `staging`: Raw Data with light transformation
 * `intermediate`: Shared Data Between Model
 * `mart`:Analytics Ready Data
+* `reports`: Views with prepagrregated joins on mart layer.
 
 ---
 
+## Analytics Data Model
+![](images/dim_model.svg)
+---
 
 ### Dimension
 | Table Name              | Type      | Grain                             | Description                                                              |
@@ -99,6 +103,8 @@ docker ps
 
 # 5. Open a shell session into the dbt container
 docker exec -it dbt bash
+
+# 6. Unzip the `data.zip` file in the root of the repo and copy it's content into the dbt project seeds `retail-analytics-with-dbt/retail_analytics/seeds` folder
 ```
 
 ### Running the dbt model
@@ -107,7 +113,7 @@ Inside the dbt container, run the following commands in order:
 # 1. Install dbt dependencies (e.g., packages from packages.yml)
 dbt deps
 
-# 2. Load CSV files from the `data/` folder into Postgres as seed data
+# 2. Load CSV files from into Postgres as seed data
 dbt seed
 
 # 3. Apply snapshot logic (for SCD Type 2 tables like `customers` and `sellers`)

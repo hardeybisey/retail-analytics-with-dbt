@@ -11,6 +11,7 @@ WITH base AS (
 SELECT
     b.payment_key,
     o.order_key,
+    o.order_date_key,
     b.sequence_id,
     b.payment_type,
     b.num_of_installments,
