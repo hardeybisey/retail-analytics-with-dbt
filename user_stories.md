@@ -1,11 +1,7 @@
 # 📊 Retail Intelligence Analytics User Stories & Technical Solutions
 ---
 
-Given your queries are joining fact tables with rich dimensional attributes (customer, region, seller, product, date), you're primed for **exploratory and performance-monitoring dashboards**. Below is a breakdown of **high-impact charts** you can generate from each query.
-
----
-
-## 📊 From Query 1: `fact_orders` + `dim_customer` + `dim_region` + `dim_date`
+## 📊 VIEW 1: `order_customer_region_date.sql`
 
 ### Use Case: **Customer/Region-Level Order Analysis**
 
@@ -45,7 +41,7 @@ Given your queries are joining fact tables with rich dimensional attributes (cus
 
 ---
 
-## 📊 From Query 2: `fact_order_items` + `dim_product` + `dim_seller` + `dim_region` + `dim_date`
+## 📊 VIEW 2: `order_item_seller_product_region_date`
 
 ### Use Case: **Product/Seller-Level Performance Monitoring**
 
@@ -84,19 +80,3 @@ Given your queries are joining fact tables with rich dimensional attributes (cus
    * **X-axis**: `ds.seller_id`
    * **Y-axis**: `dd.week`
    * **Metric**: `SUM(foi.item_price + foi.freight_price)`
-
----
-
-## 🧠 Tool-Specific Notes
-
-If you're using **Superset**:
-
-* Use **time grain** and **filters** in the Explore interface to group by week/month.
-* For maps, ensure `region` or `zip_code` matches the format expected by your geospatial layer.
-
-If you're using **Looker**, **Power BI**, or **Tableau**, you can use **LOD expressions** or **table calcs** to create metrics like LTV, AOV, etc., and **parameter controls** for slicing by seller/product/region.
-
----
-
-**Follow Up:**
-**Would you like a dashboard wireframe that arranges these charts into a layout designed for e-commerce ops, finance, or growth teams?**
