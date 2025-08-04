@@ -132,6 +132,9 @@ dbt docs serve
 ```
 ---
 
+### DBT Lineage Diagram
+![](images/dbt_lineage.png)
+---
 
 ## Credits
 This project was inspired by this [repo](https://github.com/cnstlungu/postcard-company-datamart)
