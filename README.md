@@ -8,10 +8,10 @@ The field of Analytics and Data Engineering is fast moving, and often times bein
 This project is intended for my personal development but I will be documenting it so anyone can pick up the project and learn from it.
 
 This same dataset is used in the following projects:
-- [Retail Analytics with SQLMesh](https://github.com/hardeybisey/retail-analytics-platform)
-- [Retail Analytics with Airflow](https://github.com/hardeybisey/retail-analytics-platform)
-- [Retail Analytics with Spark](https://github.com/hardeybisey/retail-analytics-platform)
-- [Retail Analytics with Dataflow](https://github.com/hardeybisey/retail-analytics-platform)
+- [Retail Analytics with Spark](https://github.com/hardeybisey/retail-analytics-with-spark)
+- [Retail Analytics with Dataflow](https://github.com/hardeybisey/retail-analytics-with-dataflow)
+- [Retail Analytics with Airflow](https://github.com/hardeybisey/retail-analytics-with-airflow)
+- [Retail Analytics with SQLMesh](https://github.com/hardeybisey/retail-analytics-with-sqlmesh)
 
 
 ## Project Technology Stack
@@ -28,7 +28,7 @@ This same dataset is used in the following projects:
 ## Data Context
 The dataset contains real commercial data from Olist, the largest department store in Brazilian marketplaces. It includes information from nearly 100,000 orders placed between 2016 and 2018. The data is anonymized and covers various aspects of the e-commerce lifecycle.
 
--m "### **Raw Data Schema**
+### **Raw Data Schema**
 ![](images/HRhd2Y0.png)
 
 ---
