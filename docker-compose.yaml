@@ -1,0 +1,69 @@
+services:
+  data-gen:
+    build: data_gen/
+    command: >
+      --output_dir /data
+      --customers 5000
+      --sellers 1000
+      --orders 200000
+    volumes:
+        - ./retail_analytics/seeds:/data
+
+  dbt:
+    build: dbt_docker/
+    container_name: dbt-container
+    ports:
+      - "8081:8080"
+    environment:
+      DBT_PROFILES_DIR: /usr/app/retail_analytics
+      DBT_PROJECT_DIR: /usr/app/retail_analytics
+      PG_USER: ${PG_USER}
+      PG_PASSWORD: ${PG_PASSWORD}
+      PG_HOST: db
+    stdin_open: true
+    tty: true
+
+    volumes:
+      - ./retail_analytics:/usr/app/retail_analytics
+    depends_on:
+      - db
+
+  db:
+    image: postgres:15
+    container_name: postgres-db
+    environment:
+      POSTGRES_USER: ${PG_USER}
+      POSTGRES_PASSWORD: ${PG_PASSWORD}
+      POSTGRES_DB: retail_analytics
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    depends_on:
+      - data-gen
+
+  # superset:
+  #   image: apache/superset:latest-dev
+  #   container_name: superset-container
+  #   command: >
+  #     bash -c "
+  #     superset db upgrade &&
+  #       superset fab create-admin --username ${SUPERSET_USER} --firstname Superset --lastname Admin --email admin@superset.com --password ${SUPERSET_PASSWORD} &&
+  #       superset init &&
+  #       superset run -h 0.0.0.0 -p 8088 --with-threads --reload --debugger
+  #     "
+  #   environment:
+  #     - SQLALCHEMY_DATABASE_URI=postgresql+psycopg2://${PG_USER}:${PG_PASSWORD}@db/superset
+  #     - SUPERSET_SECRET_KEY=mysecurekey
+
+  #   ports:
+  #     - "8088:8088"
+  #   volumes:
+  #     - superset_data:/app/superset_home
+  #     - ./superset:/app/superset_home
+  #   depends_on:
+  #     - db
+
+volumes:
+  postgres_data:
+  superset_data:

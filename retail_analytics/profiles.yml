@@ -1,0 +1,17 @@
+retail_analytics:
+  outputs:
+    dev:
+      type: duckdb
+      path: ./retail_analytics.duckdb
+      threads: 1
+
+    pg:
+      type: postgres
+      host: "{{ env_var('PG_HOST') }}"
+      port: 5432
+      user: "{{ env_var('PG_USER') }}"
+      password: "{{ env_var('PG_PASSWORD') }}"
+      schema: csv_input
+      dbname: retail_analytics
+      threads: 4
+  target: pg
