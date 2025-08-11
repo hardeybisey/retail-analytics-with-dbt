@@ -1,0 +1,148 @@
+version: 2
+
+sources:
+  - name: csv_input
+    description: ""
+    tables:
+      - name: customers
+        description: >
+          This dataset contains information about the customer and their location. It can be used to identify unique customers in the orders dataset and to determine the delivery location of orders. <br>
+        meta:
+          domain: customers
+        identifier: customers
+        columns:
+          - name: customer_id
+            data_type: text
+            description: "The unique identifier for each customer."
+          - name: customer_address
+            data_type: text
+            description: ""
+          - name: customer_zip_code
+            data_type: integer
+            description: "The zip code prefix of the customer's location."
+          - name: customer_state
+            data_type: text
+            description: ""
+          - name: customer_created_date
+            data_type: datetime
+            description: "When the customer first registered"
+          - name: customer_updated_date
+            data_type: datetime
+            description: "When the customer updated their registration details"
+
+
+      - name: sellers
+        description: >
+          This dataset contains information about the sellers who fulfilled specific orders. It can be used to find the seller's location and to identify which seller fulfilled each product order..
+        meta:
+          domain: sellers
+        identifier: sellers
+        columns:
+          - name: seller_id
+            data_type: text
+            description: ""
+          - name: seller_zip_code
+            data_type: integer
+            description: ""
+          - name: seller_state
+            data_type: text
+            description: ""
+          - name: seller_created_date
+            data_type: datetime
+            description: "When the seller first registered"
+          - name: seller_updated_date
+            data_type: datetime
+            description: "When the seller updated their registration details"
+
+      - name: orders
+        description: >
+          This is the core dataset. From each order, you can find all other related information.
+        meta:
+          domain: orders
+        identifier: orders
+        columns:
+          - name: order_id
+            data_type: text
+            description: ""
+          - name: customer_id
+            data_type: text
+            description: ""
+          - name: order_status
+            data_type: text
+            description: ""
+          - name: order_purchase_timestamp
+            data_type: datetime
+            description: ""
+          - name: order_approved_at
+            data_type: datetime
+            description: ""
+          - name: order_delivered_carrier_date
+            data_type: datetime
+            description: ""
+          - name: order_delivered_customer_date
+            data_type: datetime
+            description: ""
+          - name: order_estimated_delivery_date
+            data_type: datetime
+            description: ""
+
+      - name: order_items
+        description: >
+          This dataset contains data about the items purchased within each order.
+        meta:
+          domain: orders
+        identifier: order_items
+        columns:
+          - name: order_id
+            data_type: text
+            description: ""
+          - name: order_item_id
+            data_type: integer
+            description: ""
+          - name: product_id
+            data_type: text
+            description: ""
+          - name: seller_id
+            data_type: text
+            description: ""
+          - name: shipping_limit_date
+            data_type: datetime
+            description: ""
+          - name: price
+            data_type: double precision
+            description: ""
+          - name: freight_value
+            data_type: double precision
+            description: ""
+
+      - name: products
+        description: >
+          This dataset contains information about each products sold.
+        meta:
+          domain: products
+        identifier: products
+        columns:
+          - name: product_id
+            data_type: text
+            description: ""
+          - name: product_category
+            data_type: text
+            description: ""
+          - name: product_name
+            data_type: text
+            description: ""
+          - name: product_size_label
+            data_type: text
+            description: ""
+          - name: product_width_cm
+            data_type: float
+            description: ""
+          - name: product_length_cm
+            data_type: float
+            description: ""
+          - name: product_height_cm
+            data_type: float
+            description: ""
+          - name: product_price
+            data_type: float
+            description: ""
