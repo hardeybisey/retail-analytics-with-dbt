@@ -19,17 +19,13 @@ This same dataset is used in the following projects:
 * [Postgres](https://www.postgresql.org/docs/)
 
 ---
-
-**Link to full information and source of the dataset is [here](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce/data)**
-
----
 ## Data Context
-he dataset is a synthetic e-commerce dataset simulating order activity between 2022 and 2024.
+The dataset is a synthetic e-commerce dataset simulating order activity between 2020 and 2024.
 
 It captures the relationships between customers, sellers, orders, order items, and products, including category translations.
 The data is structured to support analytics on customer behaviour, product sales, fulfilment timelines, and seller performance.
 ### **Raw Data Schema**
-![](images/HRhd2Y0.png)
+<!-- ![](images/HRhd2Y0.png) -->
 
 ---
 
@@ -54,7 +50,7 @@ The data is structured to support analytics on customer behaviour, product sales
 ---
 
 ## Analytics Data Model
-![](images/dim_model.svg)
+<!-- ![](images/dim_model.svg) -->
 ---
 
 ### Dimension
@@ -96,8 +92,6 @@ docker ps
 
 # 5. Open a shell session into the dbt container
 docker exec -it dbt-container bash
-
-# 6. Unzip the `data.zip` file in the root of the repo and copy it's content into the dbt project seeds `retail-analytics-with-dbt/retail_analytics/seeds` folder
 ```
 
 ### Running the dbt model
@@ -127,7 +121,7 @@ dbt docs serve
 ---
 
 ### DBT Lineage Diagram
-![](images/dbt_lineage.png)
+<!-- ![](images/dbt_lineage.png) -->
 ---
 
 ## Credits
