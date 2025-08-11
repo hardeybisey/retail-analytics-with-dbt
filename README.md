@@ -17,7 +17,6 @@ This same dataset is used in the following projects:
 * [Docker](https://docs.docker.com/engine/install/)
 * [DBT](https://docs.getdbt.com/)
 * [Postgres](https://www.postgresql.org/docs/)
-* [Superset](https://superset.apache.org/docs/intro/)
 
 ---
 
@@ -25,8 +24,10 @@ This same dataset is used in the following projects:
 
 ---
 ## Data Context
-The dataset contains real commercial data from Olist, the largest department store in Brazilian marketplaces. It includes information from nearly 100,000 orders placed between 2016 and 2018. The data is anonymized and covers various aspects of the e-commerce lifecycle.
+he dataset is a synthetic e-commerce dataset simulating order activity between 2022 and 2024.
 
+It captures the relationships between customers, sellers, orders, order items, and products, including category translations.
+The data is structured to support analytics on customer behaviour, product sales, fulfilment timelines, and seller performance.
 ### **Raw Data Schema**
 ![](images/HRhd2Y0.png)
 
@@ -37,16 +38,11 @@ The dataset contains real commercial data from Olist, the largest department sto
 
 | Dataset Name              | Description                                                                                                                                                                                | Key Columns                                    |
 |--------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------|
-| **Customers**            | Contains customer information and location. Use `customer_id` to identify unique orders and `customer_unique_id` to identify repeat purchasers.                                            | `customer_id`, `customer_unique_id`, `customer_zip_code_prefix`, `customer_city`, `customer_state` |
-| **Geolocation**          | Brazilian zip codes with latitude and longitude. Useful for mapping and distance calculations between customer and seller locations.                                                       | `geolocation_zip_code_prefix`, `geolocation_lat`, `geolocation_lng`, `geolocation_city`, `geolocation_state` |
-| **Order Items**          | Data on each item within an order. Includes quantity, value, and freight for each item.                                                                                                    | `order_id`, `order_item_id`, `product_id`, `seller_id`, `shipping_limit_date`, `price`, `freight_value` |
-| **Payments**             | Details payment methods used per order. Orders can have multiple payments using different methods.                                                                                         | `order_id`, `payment_sequential`, `payment_type`, `payment_installments`, `payment_value` |
-| **Reviews**        | Customer reviews post-delivery or after the expected delivery date. Includes ratings and textual feedback.                                                                                 | `review_id`, `order_id`, `review_score`, `review_comment_title`, `review_comment_message`, `review_creation_date`, `review_answer_timestamp` |
+| **Customers**            | Contains customer information and location.                                            | `customer_id`, `customer_address`, `customer_zip_code`, `customer_state`, `customer_created_date`, `customer_updated_date` |
+| **Sellers**              | Data about sellers, including their location and identification. Used to trace product fulfilment.                                                                                         | `seller_id`, `seller_zip_code`, `seller_state`, `seller_created_date`, `seller_updated_date` |
 | **Orders**               | Core dataset linking to all others. Represents individual purchases and delivery timelines.                                                                                                | `order_id`, `customer_id`, `order_status`, `order_purchase_timestamp`, `order_approved_at`, `order_delivered_carrier_date`, `order_delivered_customer_date`, `order_estimated_delivery_date` |
-| **Products**             | Information about products sold. Includes name, category, and physical attributes.                                                                                                         | `product_id`, `product_category_name`, `product_name_lenght`, `product_description_lenght`, `product_photos_qty`, `product_weight_g`, `product_length_cm`, `product_height_cm`, `product_width_cm` |
-| **Sellers**              | Data about sellers, including their location and identification. Used to trace product fulfilment.                                                                                         | `seller_id`, `seller_zip_code_prefix`, `seller_city`, `seller_state` |
-| **Category Translation** | Translates original product categories (in Portuguese) to English.                                                                                                                          | `product_category_name`, `product_category_name_english` |
-
+| **Order Items**          | Data on each item within an order. Includes quantity, value, and freight for each item.                                                                                                    | `order_id`, `order_item_id`, `product_id`, `seller_id`, `shipping_limit_date`, `price`, `freight_value` |
+| **Products**             | Information about products sold. Includes name, category, and physical attributes.                                                                                                         | `product_id`, `product_category`, `product_name`, `product_size_label`, `product_width_cm`, `product_length_cm`, `product_height_cm`, `product_price`|
 ---
 
 ## Analytics Data Layers
@@ -65,12 +61,11 @@ The dataset contains real commercial data from Olist, the largest department sto
 | Table Name              | Type      | Grain                             | Description                                                              |
 |------------------------|-----------|-----------------------------------|--------------------------------------------------------------------------|
 | dim_customer           | Dimension | 1 row per customer_key      | Unique customer profile, independent of orders                           |
-| dim_region        | Dimension | 1 row per zip code prefix         | Geographic mapping of zip codes to lat/lon, city, state                  |
+| dim_region        | Dimension | 1 row per zip code prefix         | Geographic mapping of zip codes to state                  |
 | dim_seller             | Dimension | 1 row per seller_key               | Seller metadata and location                                             |
 | dim_product            | Dimension | 1 row per product_key              | Product metadata and physical attributes                                 |
 | dim_product_category   | Dimension | 1 row per category name           | English translation of product categories                                |
 | dim_date               | Dimension | 1 row per day                     | Date dimension for temporal analysis                                     |
-| dim_order_review       | Dimension | 1 row per review_id               | Star rating, comments, review timeline                                   |
 
 ---
 
@@ -79,8 +74,7 @@ The dataset contains real commercial data from Olist, the largest department sto
 | Table Name              | Type      | Grain                             | Description                                                              |
 |------------------------|-----------|-----------------------------------|--------------------------------------------------------------------------|
 | fact_orders            | Fact | 1 row per order_key                 | Order lifecycle: purchase, delivery, status                              |
-| fact_order_items       | Fact | 1 row per order_item_key(`order_id+item_id`)       | Item-level value, freight, product, seller                               |
-| fact_payments          | Fact | 1 row per payment_key(`order+payment_seq`)     | Multi-method or multi-installment payment data                           |
+| fact_order_items       | Fact | 1 row per order_item_key(`order_id+item_id`)       | Item-level value, freight, product, seller                               |                          |
 
 ---
 ## Project Setup Instructions

@@ -133,7 +133,7 @@ def generate_customers(n_customers: int = N_CUSTOMERS) -> list[dict]:
                 "customer_id": f"{i+1:08d}",
                 "customer_address": fake.unique.street_address(),
                 "customer_state": state_abbr,
-                "customer_zip_code_prefix": fake.zipcode_in_state(state_abbr),
+                "customer_zip_code": fake.zipcode_in_state(state_abbr),
                 "customer_created_date": random_date(end=datetime(2023, 12, 31)),
                 "customer_updated_date": None,
             }
@@ -151,7 +151,7 @@ def generate_sellers(n_sellers: int = N_SELLERS) -> list[dict]:
             {
                 "seller_id": f"{i+1:08d}",
                 "seller_state": state_abbr,
-                "seller_zip_code_prefix": fake.zipcode_in_state(state_abbr),
+                "seller_zip_code": fake.zipcode_in_state(state_abbr),
                 "customer_created_date": random_date(end=datetime(2023, 7, 31)),
                 "seller_updated_date": None,
             }
