@@ -27,3 +27,7 @@ models:
     staging:
       +schema: staging
       +tags: ['staging']
+
+seeds:
+  retail_analytics:
+    +schema: csv_input

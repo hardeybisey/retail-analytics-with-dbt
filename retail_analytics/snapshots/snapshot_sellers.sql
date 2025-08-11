@@ -22,9 +22,8 @@
             seller_id,
             seller_state AS state,
             seller_zip_code::integer AS zip_code_prefix,
-            TO_TIMESTAMP(seller_created_date::text, 'YYYY-MM-DD') AS created_date,
-            TO_TIMESTAMP(seller_updated_date::text, 'YYYY-MM-DD') AS updated_date
-
+            seller_created_date::timestamp AS created_date,
+            COALESCE(seller_updated_date, '1900-01-01 00:00:00'::timestamp) AS updated_date
         FROM source
 
     )
