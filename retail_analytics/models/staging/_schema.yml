@@ -1,0 +1,143 @@
+version: 2
+
+models:
+  - name: stg_order_items
+    description: "Order items data from the retail dataset."
+    columns:
+      - name: order_id
+        data_type: text
+        description: "The unique identifier for each order."
+        tests:
+          - relationships:
+              to: ref('stg_orders')
+              field: order_id
+          - not_null
+      - name: order_item_id
+        data_type: integer
+        description: "sequential number identifying number of items included in the same order."
+        tests:
+          - not_null
+      - name: product_id
+        data_type: text
+        description: "The unique identifier for each product."
+        tests:
+          - relationships:
+              to: ref('stg_products')
+              field: product_id
+          - not_null
+      - name: seller_id
+        data_type: text
+        description: "The unique identifier for the seller who fulfilled the order."
+        tests:
+          - relationships:
+              to: ref('snapshot_sellers')
+              field: seller_id
+          - not_null
+      - name: shipping_limit_date
+        data_type: datetime
+        description: "Shows the seller shipping limit date for handling the order over to the logistic partner."
+      - name: item_value
+        data_type: float
+        description: "item value at the moment of the order."
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">=0"
+      - name: freight_value
+        data_type: float
+        description: "item freight value item (if an order has more than one item the freight value is splitted between items)."
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">=0"
+
+  - name: stg_orders
+    description: "Order data from the retail dataset."
+    columns:
+      - name: order_id
+        data_type: text
+        description: "The unique identifier for each order."
+        tests:
+          - unique
+          - not_null
+      - name: customer_id
+        data_type: text
+        description: "The unique identifier for the customer who placed the order."
+        tests:
+          - relationships:
+              to: ref('snapshot_customers')
+              field: customer_id
+          - not_null
+      - name: order_status
+        data_type: text
+        description: "Reference to the order status (delivered, shipped, etc)"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['SHIPPED', 'UNAVAILABLE', 'CREATED', 'DELIVERED', 'INVOICED', 'CANCELED', 'PROCESSING', 'APPROVED']
+      - name: order_timestamp
+        data_type: datetime
+        description: "Shows the purchase timestamp."
+      - name: payment_approved_date
+        data_type: date
+        description: "Shows the payment approval timestamp."
+      - name: delivered_to_carrier_date
+        data_type: date
+        description: "Shows the order posting timestamp. When it was handled to the logistic partner."
+      - name: delivered_to_customer_date
+        data_type: datetime
+        description: "Shows the actual order delivery date to the customer."
+      - name: estimated_delivery_date
+        data_type: datetime
+        description: "Shows the estimated delivery date that was informed to customer at the purchase moment"
+
+  - name: stg_products
+    description: "Product data from the retail dataset."
+    columns:
+      - name: product_id
+        data_type: text
+        description: "The unique identifier for each product."
+        tests:
+          - unique
+          - not_null
+      - name: category_name
+        data_type: text
+        description: "product category name."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_product_category')
+              field: category_name
+      - name: size_label
+        data_type: text
+        description: "product size label."
+      - name: product_name
+        data_type: text
+        description: "name of product."
+      - name: price
+        data_type: float
+        description: "product price"
+      - name: length_cm
+        data_type: float
+        description: "product length measured in centimeters."
+      - name: height_cm
+        data_type: float
+        description: "product height measured in centimeters."
+      - name: width_cm
+        data_type: float
+        description: "product width measured in centimeters."
+
+  - name: stg_product_category
+    description: "Product categories."
+    columns:
+      - name: category_id
+        data_type: text
+        tests:
+          - unique
+          - not_null
+      - name: category_name
+        data_type: text
+        description: "product categories"
+      - name: product_sub_category
+        data_type: text
+        description: "product subcategories"

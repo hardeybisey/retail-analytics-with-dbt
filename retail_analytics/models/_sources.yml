@@ -146,3 +146,20 @@ sources:
           - name: product_price
             data_type: float
             description: ""
+
+      - name: product_category
+        description: >
+          This dataset contains information about categories of product sold.
+        meta:
+          domain: product
+        identifier: product_category
+        columns:
+          - name: product_category_id
+            data_type: text
+            description: ""
+          - name: product_category
+            data_type: text
+            description: ""
+          - name: product_sub_category
+            data_type: text
+            description: ""

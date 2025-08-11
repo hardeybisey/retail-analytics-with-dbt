@@ -63,19 +63,19 @@ BOX_CATALOGUE = {
 }
 
 BOX_SIZES = {
-    "Small": {"width": 20, "length": 25, "height": 15},
-    "Medium": {"width": 30, "length": 35, "height": 20},
-    "Large": {"width": 40, "length": 50, "height": 30},
-    "Extra Large": {"width": 50, "length": 60, "height": 40},
+    "Small": {"width": 20.5, "length": 25.5, "height": 15.5},
+    "Medium": {"width": 30.5, "length": 35.5, "height": 20.5},
+    "Large": {"width": 40.5, "length": 50.5, "height": 30.5},
+    "Extra Large": {"width": 50.5, "length": 60.5, "height": 40.5},
 }
 
 CATEGORY_PRICE_MULTIPLIER = {
-    "general_purpose": 1.0,
+    "general_purpose": 1.1,
     "premium": 1.5,
     "eco_friendly": 1.2,
     "heavy_duty": 1.3,
     "gift_decorative": 1.4,
-    "flatpack_stackable": 1.1,
+    "flatpack_stackable": 1.15,
 }
 
 
@@ -94,6 +94,26 @@ def random_date(start=datetime(2020, 1, 1), end=datetime(2024, 12, 31)):
     """Generate a random datetime between `start` and `end`"""
     result = start + timedelta(seconds=randint(0, int((end - start).total_seconds())))
     return result.date()
+
+
+def generate_product_category() -> list[dict]:
+    """Generate product catalogue with prices based on category and size."""
+    logger.info("Generating products categories")
+    categories = []
+    category_id = 1
+    for category, sub_categories in BOX_CATALOGUE.items():
+        sub_cats = []
+        for sub_cat in sub_categories:
+            sub_cats.append(
+                {
+                    "product_category_id": f"{category_id:08d}",
+                    "product_category": category,
+                    "product_sub_category": sub_cat,
+                }
+            )
+            category_id += 1
+        categories.extend(sub_cats)
+    return categories
 
 
 def generate_products() -> list[dict]:
@@ -152,7 +172,7 @@ def generate_sellers(n_sellers: int = N_SELLERS) -> list[dict]:
                 "seller_id": f"{i+1:08d}",
                 "seller_state": state_abbr,
                 "seller_zip_code": fake.zipcode_in_state(state_abbr),
-                "customer_created_date": random_date(end=datetime(2023, 7, 31)),
+                "seller_created_date": random_date(end=datetime(2023, 7, 31)),
                 "seller_updated_date": None,
             }
         )
@@ -279,6 +299,7 @@ if __name__ == "__main__":
 
     logger.info("Synthetic data generating started")
 
+    product_category = generate_product_category()
     products = generate_products()
     customers = generate_customers(n_customers=args.customers)
     sellers = generate_sellers(n_sellers=args.sellers)
@@ -288,6 +309,7 @@ if __name__ == "__main__":
     logger.info("Synthetic data generating completed")
 
     logger.info(f"Saving data to disk at {path} directory")
+    pd.DataFrame(product_category).to_csv(path / "product_category.csv", index=False)
     pd.DataFrame(products).to_csv(path / "products.csv", index=False)
     pd.DataFrame(customers).to_csv(path / "customers.csv", index=False)
     pd.DataFrame(sellers).to_csv(path / "sellers.csv", index=False)

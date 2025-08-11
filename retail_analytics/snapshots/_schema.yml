@@ -1,0 +1,75 @@
+version: 2
+
+snapshots:
+  - name: snapshot_sellers
+    description: "Seller data from the retail dataset."
+    columns:
+      - name: seller_id
+        data_type: text
+        description: "The unique identifier for each seller."
+        tests:
+          - not_null
+      - name: state
+        data_type: text
+        description: "seller state."
+        tests:
+          - not_null
+      - name: zip_code_prefix
+        data_type: text
+        description: "seller zip code"
+        tests:
+          - not_null
+      - name: created_date
+        data_type: timestamp
+        description: "seller created date in source system"
+        tests:
+          - not_null
+      - name: updated_date
+        data_type: timestamp
+        description: "seller updated date from source system"
+      - name: dbt_updated_at
+        data_type: timestamp
+        description: "last modified date of the seller record"
+      - name: dbt_valid_to
+        data_type: timestamp
+        description: "end date of the seller record, null if the record is current"
+
+
+
+  - name: snapshot_customers
+    description: "Customer data from the retail dataset."
+    columns:
+      - name: customer_id
+        data_type: text
+        description: "The unique identifier for each customer."
+        tests:
+          - not_null
+      - name: address
+        data_type: text
+        description: "full customer adrress line."
+        tests:
+          - not_null
+      - name: state
+        data_type: text
+        description: "customer state."
+        tests:
+          - not_null
+      - name: zip_code_prefix
+        data_type: text
+        description: "customer zip code"
+        tests:
+          - not_null
+      - name: created_date
+        data_type: timestamp
+        description: "customer created date in source system"
+        tests:
+          - not_null
+      - name: updated_date
+        data_type: timestamp
+        description: "customer updated date from source system"
+      - name: dbt_updated_at
+        data_type: timestamp
+        description: "last modified date of the customer record"
+      - name: dbt_valid_to
+        data_type: timestamp
+        description: "end date of the customer record, null if the record is current"
