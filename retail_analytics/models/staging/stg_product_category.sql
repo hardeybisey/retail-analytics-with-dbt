@@ -10,7 +10,7 @@ deduplicated_products AS (
 
     SELECT
         product_category_id AS category_id,
-        product_category AS category_name,
+        product_category_name AS category_name,
         product_sub_category,
         row_number() OVER (PARTITION BY product_category_id) AS row_num
 

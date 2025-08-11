@@ -11,7 +11,7 @@ services:
 
   dbt:
     build: dbt_docker/
-    container_name: dbt-container
+    container_name: dbt
     ports:
       - "8081:8080"
     environment:
@@ -42,28 +42,5 @@ services:
     depends_on:
       - data-gen
 
-  # superset:
-  #   image: apache/superset:latest-dev
-  #   container_name: superset-container
-  #   command: >
-  #     bash -c "
-  #     superset db upgrade &&
-  #       superset fab create-admin --username ${SUPERSET_USER} --firstname Superset --lastname Admin --email admin@superset.com --password ${SUPERSET_PASSWORD} &&
-  #       superset init &&
-  #       superset run -h 0.0.0.0 -p 8088 --with-threads --reload --debugger
-  #     "
-  #   environment:
-  #     - SQLALCHEMY_DATABASE_URI=postgresql+psycopg2://${PG_USER}:${PG_PASSWORD}@db/superset
-  #     - SUPERSET_SECRET_KEY=mysecurekey
-
-  #   ports:
-  #     - "8088:8088"
-  #   volumes:
-  #     - superset_data:/app/superset_home
-  #     - ./superset:/app/superset_home
-  #   depends_on:
-  #     - db
-
 volumes:
   postgres_data:
-  superset_data:

@@ -25,7 +25,7 @@ The dataset is a synthetic e-commerce dataset simulating order activity between 
 It captures the relationships between customers, sellers, orders, order items, and products, including category translations.
 The data is structured to support analytics on customer behaviour, product sales, fulfilment timelines, and seller performance.
 ### **Raw Data Schema**
-<!-- ![](images/HRhd2Y0.png) -->
+![](images/application.svg)
 
 ---
 
@@ -87,11 +87,11 @@ DB_PASSWORD=<your_postgres_password>
 # 3. Start Services with Docker
 docker compose up -d
 
-# 4. Check that the container is up, you should look for a container named `dbt-container`
+# 4. Check that the container is up, you should look for a container named `dbt`
 docker ps
 
 # 5. Open a shell session into the dbt container
-docker exec -it dbt-container bash
+docker exec -it dbt bash
 ```
 
 ### Running the dbt model

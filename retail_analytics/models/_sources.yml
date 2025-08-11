@@ -125,7 +125,7 @@ sources:
           - name: product_id
             data_type: text
             description: ""
-          - name: product_category
+          - name: product_category_name
             data_type: text
             description: ""
           - name: product_name
@@ -157,7 +157,7 @@ sources:
           - name: product_category_id
             data_type: text
             description: ""
-          - name: product_category
+          - name: product_category_name
             data_type: text
             description: ""
           - name: product_sub_category
