@@ -10,7 +10,7 @@ deduplicated_products AS (
 
     SELECT
         product_id,
-        product_category AS category_name,
+        product_category_name AS category_name,
         product_name,
         product_size_label AS size_label,
         product_price::float AS price,
