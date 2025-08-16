@@ -15,7 +15,7 @@
 
     ),
 
-    renamed AS (
+    deduplicated_customers AS (
 
         SELECT
             customer_id,
@@ -23,12 +23,21 @@
             customer_state AS state,
             customer_zip_code::integer AS zip_code_prefix,
             customer_created_date::timestamp AS created_date,
-            COALESCE(customer_updated_date, '1900-01-01 00:00:00'::timestamp) AS updated_date
+            COALESCE(customer_updated_date, '1900-01-01 00:00:00'::timestamp) AS updated_date,
+            ROW_NUMBER() OVER (PARTITION BY customer_id) AS row_num
 
         FROM source
 
     )
 
-    SELECT * FROM renamed
+    SELECT
+        customer_id,
+        address,
+        state,
+        zip_code_prefix,
+        created_date,
+        updated_date
+    FROM deduplicated_customers
+    WHERE row_num = 1
 
 {% endsnapshot %}

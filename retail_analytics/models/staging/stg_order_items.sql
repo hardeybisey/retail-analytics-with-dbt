@@ -1,5 +1,5 @@
 {{ config(
-    tags = ['orders'],
+    tags = ['order'],
     )
  }}
 

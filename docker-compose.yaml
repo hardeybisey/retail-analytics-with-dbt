@@ -19,16 +19,17 @@ services:
       DBT_PROJECT_DIR: /usr/app/retail_analytics
       PG_USER: ${PG_USER}
       PG_PASSWORD: ${PG_PASSWORD}
-      PG_HOST: db
+      PG_HOST: postgres-db
     stdin_open: true
     tty: true
 
     volumes:
       - ./retail_analytics:/usr/app/retail_analytics
     depends_on:
-      - db
+      - postgres-db
+      - data-gen
 
-  db:
+  postgres-db:
     image: postgres:15
     container_name: postgres-db
     environment:
@@ -39,8 +40,6 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    depends_on:
-      - data-gen
 
 volumes:
   postgres_data:

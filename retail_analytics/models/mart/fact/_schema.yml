@@ -1,0 +1,116 @@
+version: 2
+
+models:
+  - name: fct_orders
+    description: ""
+    columns:
+      - name: order_key
+        data_type: text
+        description: ""
+        tests:
+          - not_null
+          - unique
+
+      - name: customer_key
+        data_type: text
+        description: ""
+        tests:
+          - not_null
+
+      - name: order_id
+        data_type: text
+        description: "The unique identifier for each order."
+        tests:
+          - not_null
+
+      - name: item_count
+        data_type: bigint
+        description: ""
+
+      - name: total_order_value
+        data_type: double precision
+        description: ""
+
+      - name: total_freight_value
+        data_type: double precision
+        description: ""
+
+      - name: min_shipping_limit_date_key
+        data_type: date
+        description: ""
+
+      - name: max_shipping_limit_date_key
+        data_type: date
+        description: ""
+
+      - name: order_date_key
+        data_type: date
+        description: "Shows the purchase timestamp."
+
+      - name: payment_approved_date_key
+        data_type: date
+        description: "Shows the payment approval timestamp."
+
+      - name: delivered_to_carrier_date_key
+        data_type: date
+        description: "Shows the order posting timestamp. When it was handled to the logistic partner."
+
+      - name: delivered_to_customer_date_key
+        data_type: date
+        description: "Shows the actual order delivery date to the customer."
+
+      - name: estimated_delivery_date_key
+        data_type: date
+        description: "Shows the estimated delivery date that was informed to customer at the purchase moment"
+
+      - name: order_status
+        data_type: text
+        description: "Reference to the order status (delivered, shipped, etc)"
+
+  - name: fct_order_items
+    description: ""
+    columns:
+      - name: order_item_key
+        data_type: text
+        description: ""
+        tests:
+          - not_null
+          - unique
+
+      - name: order_id
+        data_type: text
+        description: ""
+        tests:
+          - not_null
+
+      - name: order_item_id
+        data_type: integer
+        description: ""
+
+      - name: item_value
+        data_type: double precision
+        description: ""
+
+      - name: freight_value
+        data_type: double precision
+        description: ""
+
+      - name: shipping_limit_date_key
+        data_type: date
+        description: ""
+
+      - name: order_timestamp
+        data_type: timestamp without time zone
+        description: ""
+
+      - name: product_key
+        data_type: text
+        description: ""
+        tests:
+          - not_null
+
+      - name: seller_key
+        data_type: text
+        description: ""
+        tests:
+          - not_null

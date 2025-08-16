@@ -9,6 +9,11 @@ snapshots:
         description: "The unique identifier for each seller."
         tests:
           - not_null
+      - name: address
+        data_type: text
+        description: "full seller adrress line."
+        tests:
+          - not_null
       - name: state
         data_type: text
         description: "seller state."

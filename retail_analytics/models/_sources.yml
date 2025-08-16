@@ -41,6 +41,9 @@ sources:
           - name: seller_id
             data_type: text
             description: ""
+          - name: seller_address
+            data_type: text
+            description: ""
           - name: seller_zip_code
             data_type: integer
             description: ""
@@ -70,7 +73,7 @@ sources:
           - name: order_status
             data_type: text
             description: ""
-          - name: order_purchase_timestamp
+          - name: order_purchase_date
             data_type: datetime
             description: ""
           - name: order_approved_at
@@ -125,7 +128,7 @@ sources:
           - name: product_id
             data_type: text
             description: ""
-          - name: product_category_name
+          - name: product_category
             data_type: text
             description: ""
           - name: product_name
@@ -156,8 +159,8 @@ sources:
         columns:
           - name: product_category_id
             data_type: text
-            description: ""
-          - name: product_category_name
+            description: "Unique identifier for each product category/subcategory"
+          - name: product_category
             data_type: text
             description: ""
           - name: product_sub_category

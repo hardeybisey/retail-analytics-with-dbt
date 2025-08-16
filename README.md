@@ -1,10 +1,10 @@
 # Retail Analytics with DBT
 
-The goal of this project is to design and implement an analytics data warehouse for an e-commerce store. The data model will be iteratively enhanced using a variety of tools, frameworks, and architectural patterns.
+This project demonstrates how to design and implement an analytics data warehouse for an e-commerce store using **dbt**. The focus is on building scalable data models, applying transformation logic, and leveraging dbt’s testing, lineage, and documentation capabilities.
 
-Given the fast-evolving nature of Analytics and Data Engineering, the ability to approach the same problem from multiple angles is a highly valuable skill. This project is structured around solving a consistent set of business questions using different technologies and methodologies — allowing for a comparative, hands-on exploration of modern data engineering practices.
+The aim is to explore how dbt can serve as the core framework for analytics engineering, while addressing a consistent set of business questions. This provides a clear, hands-on view of dbt’s strengths in structuring data workflows and ensuring reliability.
 
-While the primary motivation is personal development, all work will be documented to ensure the project is accessible and educational for others interested in learning or upskilling in this domain.
+Although the primary motivation is personal development, the work is fully documented to serve as a learning resource for others interested in analytics engineering with dbt.
 
 This same dataset is used in the following projects:
 - [Retail Analytics with Spark](https://github.com/hardeybisey/retail-analytics-with-spark)
@@ -12,6 +12,7 @@ This same dataset is used in the following projects:
 - [Retail Analytics with Airflow](https://github.com/hardeybisey/retail-analytics-with-airflow)
 - [Retail Analytics with SQLMesh](https://github.com/hardeybisey/retail-analytics-with-sqlmesh)
 
+---
 
 ## Project Technology Stack
 * [Docker](https://docs.docker.com/engine/install/)
@@ -20,10 +21,10 @@ This same dataset is used in the following projects:
 
 ---
 ## Data Context
-The dataset is a synthetic e-commerce dataset simulating order activity between 2020 and 2024.
+The dataset is a synthetic e-commerce dataset simulating activities between 2020-01-01 and 2024-12-31. It captures the relationships between customers, sellers, orders, order items, and products.
 
-It captures the relationships between customers, sellers, orders, order items, and products, including category translations.
 The data is structured to support analytics on customer behaviour, product sales, fulfilment timelines, and seller performance.
+
 ### **Raw Data Schema**
 ![](images/application.svg)
 
@@ -35,29 +36,26 @@ The data is structured to support analytics on customer behaviour, product sales
 | Dataset Name              | Description                                                                                                                                                                                | Key Columns                                    |
 |--------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------|
 | **Customers**            | Contains customer information and location.                                            | `customer_id`, `customer_address`, `customer_zip_code`, `customer_state`, `customer_created_date`, `customer_updated_date` |
-| **Sellers**              | Data about sellers, including their location and identification. Used to trace product fulfilment.                                                                                         | `seller_id`, `seller_zip_code`, `seller_state`, `seller_created_date`, `seller_updated_date` |
-| **Orders**               | Core dataset linking to all others. Represents individual purchases and delivery timelines.                                                                                                | `order_id`, `customer_id`, `order_status`, `order_purchase_timestamp`, `order_approved_at`, `order_delivered_carrier_date`, `order_delivered_customer_date`, `order_estimated_delivery_date` |
+| **Sellers**              | Data about sellers, including their location and identification. Used to trace product fulfilment.                                                                                         | `seller_id`, `seller_address`,`seller_zip_code`, `seller_state`, `seller_created_date`, `seller_updated_date` |
+| **Orders**               | Core dataset linking to all others. Represents individual purchases and delivery timelines.                                                                                                | `order_id`, `customer_id`, `order_status`, `order_purchase_date`, `order_approved_at`, `order_delivered_carrier_date`, `order_delivered_customer_date`, `order_estimated_delivery_date` |
 | **Order Items**          | Data on each item within an order. Includes quantity, value, and freight for each item.                                                                                                    | `order_id`, `order_item_id`, `product_id`, `seller_id`, `shipping_limit_date`, `price`, `freight_value` |
-| **Products**             | Information about products sold. Includes name, category, and physical attributes.                                                                                                         | `product_id`, `product_category`, `product_name`, `product_size_label`, `product_width_cm`, `product_length_cm`, `product_height_cm`, `product_price`|
+| **Products**             | Information about products sold. Includes name, category, and physical attributes.                                                                                                         | `product_id`, `product_category`, `product_category_id`, `product_name`, `product_size_label`, `product_width_cm`, `product_length_cm`, `product_height_cm`, `product_price`|
 ---
 
 ## Analytics Data Layers
 * `staging`: Raw Data with light transformation
-* `intermediate`: Shared Data Between Model
-* `mart`:Analytics Ready Data
-* `reports`: Views with prepagrregated joins on mart layer.
+* `mart`: Analytics Ready Data
 
 ---
 
 ## Analytics Data Model
-<!-- ![](images/dim_model.svg) -->
+![](images/model.svg)
 ---
 
 ### Dimension
 | Table Name              | Type      | Grain                             | Description                                                              |
 |------------------------|-----------|-----------------------------------|--------------------------------------------------------------------------|
-| dim_customer           | Dimension | 1 row per customer_key      | Unique customer profile, independent of orders                           |
-| dim_region        | Dimension | 1 row per zip code prefix         | Geographic mapping of zip codes to state                  |
+| dim_customer           | Dimension | 1 row per customer_key      | Unique customer profile, independent of orders                           |         |
 | dim_seller             | Dimension | 1 row per seller_key               | Seller metadata and location                                             |
 | dim_product            | Dimension | 1 row per product_key              | Product metadata and physical attributes                                 |
 | dim_product_category   | Dimension | 1 row per category name           | English translation of product categories                                |
@@ -103,7 +101,7 @@ dbt deps
 # 2. Load CSV files from into Postgres as seed data
 dbt seed
 
-# 3. Apply snapshot logic (for SCD Type 2 tables like `customers` and `sellers`)
+# 3. `customers_dim` and `sellers_dim` tables are managed as SCD Type 2 tables with dbt snpashot.
 dbt snapshot
 
 # 4. Run the core dbt models (transforms staging → marts)
@@ -115,13 +113,13 @@ dbt test
 # 6. Generate static documentation files
 dbt docs generate
 
-# 7. Serve the docs via a local web server (visit http://localhost:8080)
-dbt docs serve
+# 7. Serve the docs from the container and  visit http://localhost:8081 on the host to view the page.
+dbt docs serve --host 0.0.0.0 --port 8080
 ```
 ---
 
 ### DBT Lineage Diagram
-<!-- ![](images/dbt_lineage.png) -->
+![](images/dbt-dag.png)
 ---
 
 ## Credits
