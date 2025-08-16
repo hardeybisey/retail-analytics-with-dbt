@@ -16,8 +16,8 @@ clean-targets:
 
 vars:
   "dbt_date:time_zone": "Europe/London"
-  start_date: "2016-01-01"
-  end_date: "2018-12-31"
+  start_date: "2020-01-01"
+  end_date: "2024-12-31"
 
 models:
   retail_analytics:
@@ -27,7 +27,12 @@ models:
     staging:
       +schema: staging
       +tags: ['staging']
+    mart:
+      +materialized: table
+      +schema: mart
+      +tags: ['mart']
 
 seeds:
   retail_analytics:
     +schema: csv_input
+    +tags: ['seed']

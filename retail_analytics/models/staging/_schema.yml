@@ -74,21 +74,21 @@ models:
         tests:
           - not_null
           - accepted_values:
-              values: ['SHIPPED', 'UNAVAILABLE', 'CREATED', 'DELIVERED', 'INVOICED', 'CANCELED', 'PROCESSING', 'APPROVED']
-      - name: order_timestamp
-        data_type: datetime
-        description: "Shows the purchase timestamp."
-      - name: payment_approved_date
+              values: ['SHIPPED', 'UNAVAILABLE', 'CREATED', 'DELIVERED', 'INVOICED', 'CANCELLED', 'PROCESSING', 'APPROVED']
+      - name: order_date
         data_type: date
-        description: "Shows the payment approval timestamp."
+        description: "Shows the purchase timestamp."
+      - name: order_approved_date
+        data_type: date
+        description: "Shows the order approval timestamp."
       - name: delivered_to_carrier_date
         data_type: date
         description: "Shows the order posting timestamp. When it was handled to the logistic partner."
       - name: delivered_to_customer_date
-        data_type: datetime
+        data_type: date
         description: "Shows the actual order delivery date to the customer."
       - name: estimated_delivery_date
-        data_type: datetime
+        data_type: date
         description: "Shows the estimated delivery date that was informed to customer at the purchase moment"
 
   - name: stg_products
@@ -100,14 +100,14 @@ models:
         tests:
           - unique
           - not_null
-      - name: category_name
+      - name: category_id
         data_type: text
-        description: "product category name."
+        description: "foreign key to product category table"
         tests:
           - not_null
           - relationships:
               to: ref('stg_product_category')
-              field: category_name
+              field: category_id
       - name: size_label
         data_type: text
         description: "product size label."
@@ -131,6 +131,7 @@ models:
     description: "Product categories."
     columns:
       - name: category_id
+        description: "Unique identifier for each product category/subcategory"
         data_type: text
         tests:
           - unique

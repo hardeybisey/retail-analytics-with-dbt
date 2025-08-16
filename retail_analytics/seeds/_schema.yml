@@ -15,6 +15,7 @@ seeds:
       full_refresh: True
       column_types:
         seller_id: varchar
+        seller_address: varchar
         seller_state: varchar
         seller_zip_code: varchar
         seller_created_date: timestamp
@@ -25,6 +26,7 @@ seeds:
       column_types:
         product_id: varchar
         product_category: varchar
+        product_category_id: varchar
         product_size_label: varchar
         product_width_cm: float
         product_length_cm: float
@@ -55,7 +57,7 @@ seeds:
         order_id: varchar
         customer_id: varchar
         order_status: varchar
-        order_purchase_timestamp: timestamp
+        order_purchase_date: timestamp
         order_approved_at: timestamp
         order_delivered_carrier_date: timestamp
         order_delivered_customer_date: timestamp
