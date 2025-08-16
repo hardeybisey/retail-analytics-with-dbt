@@ -23,7 +23,7 @@
             customer_state AS state,
             customer_zip_code::integer AS zip_code_prefix,
             customer_created_date::timestamp AS created_date,
-            COALESCE(customer_updated_date, '1900-01-01 00:00:00'::timestamp) AS updated_date,
+            COALESCE(customer_updated_date, customer_created_date::timestamp) AS updated_date,
             ROW_NUMBER() OVER (PARTITION BY customer_id) AS row_num
 
         FROM source
