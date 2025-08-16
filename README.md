@@ -115,11 +115,28 @@ dbt docs generate
 
 # 7. Serve the docs from the container and  visit http://localhost:8081 on the host to view the page.
 dbt docs serve --host 0.0.0.0 --port 8080
+
+# 8. The `analyses` directory contains SQL for business intelligence or ad-hoc exploration. These queries are not materialized by `dbt run`. Instead, dbt compiles them, and you can then copy the resulting SQL from the `target` directory to run it directly in your database.
 ```
 ---
 
 ### DBT Lineage Diagram
 ![](images/dbt-dag.png)
+
+---
+### DBT Concepts Explored
+
+*   **dbt seeds**: This feature allows you to load static data from CSV files directly into your data warehouse.
+
+*   **dbt source**: In dbt, a source is a way to name and describe the raw data that you load into your data warehouse. By defining sources, you can reference them in your models, test the quality of your raw data.
+
+*   **dbt ref**: The `ref` function is fundamental to building modular and dependent data models in dbt. It allows you to reference another model within your dbt project, creating a dependency between them.
+
+*   **dbt tags**: Tags are metadata labels that you can apply to your dbt resources, such as models, seeds, and snapshots. They help you organize and categorize your project, allowing you to selectively run or test specific parts of your project.
+
+*   **dbt snapshots**: Snapshots are a powerful feature for capturing and tracking changes to your data over time. They are particularly useful for managing slowly changing dimensions (SCDs), where you need to maintain a historical record of how data has changed.
+
+*   **dbt analyses**: Analyses in dbt are SQL queries that are used for exploration and ad-hoc analysis. Unlike models, they are not materialized as tables or views in your data warehouse.
 ---
 
 ## Credits

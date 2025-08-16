@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: fct_orders
+  - name: fact_orders
     description: ""
     columns:
       - name: order_key
@@ -67,7 +67,7 @@ models:
         data_type: text
         description: "Reference to the order status (delivered, shipped, etc)"
 
-  - name: fct_order_items
+  - name: fact_order_items
     description: ""
     columns:
       - name: order_item_key
