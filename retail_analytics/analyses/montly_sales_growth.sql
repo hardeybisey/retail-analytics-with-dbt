@@ -1,5 +1,8 @@
 -- This query tracks the month-over-month growth in total sales, a critical KPI for
 -- business performance.
+{{
+    config(tags = ['analyses'])
+}}
 WITH monthly_sales AS (
     SELECT
         DATE_TRUNC('month', order_date_key) AS sales_month,

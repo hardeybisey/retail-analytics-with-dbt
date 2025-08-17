@@ -31,6 +31,8 @@ models:
       +materialized: table
       +schema: mart
       +tags: ['mart']
+      obt:
+        +materialized: view
 
 seeds:
   retail_analytics:

@@ -43,8 +43,10 @@ The data is structured to support analytics on customer behaviour, product sales
 ---
 
 ## Analytics Data Layers
-* `staging`: Raw Data with light transformation
-* `mart`: Analytics Ready Data
+* `staging`: Raw data with light transformation
+* `mart`: Analytics ready tables
+* `analyses`: View for business related questions
+* `obt`: Pre-joined views for analytics queries.
 
 ---
 
@@ -120,6 +122,24 @@ dbt docs serve --host 0.0.0.0 --port 8080
 ```
 ---
 
+### Preview Data In postgres
+```bash
+# 1. Open a shell session into the postgres container
+docker exec -it  postgres-db bash
+
+# 2. Connect to the Database with psql
+psql -U $POSTGRES_USER -d retail_analytics
+
+# 3. Explore the Database
+\dn #list all schemas
+\dt mart.* #list all tables in marts schema
+
+# 4. Preview the first 5 rows of dim_customer table.
+SELECT * FROM mart.dim_customer LIMIT 5;
+```
+![](images/data_preview.png)
+
+
 ### DBT Lineage Diagram
 ![](images/dbt-dag.png)
 
@@ -135,6 +155,10 @@ dbt docs serve --host 0.0.0.0 --port 8080
 *   **dbt tags**: Tags are metadata labels that you can apply to your dbt resources, such as models, seeds, and snapshots. They help you organize and categorize your project, allowing you to selectively run or test specific parts of your project.
 
 *   **dbt snapshots**: Snapshots are a powerful feature for capturing and tracking changes to your data over time. They are particularly useful for managing slowly changing dimensions (SCDs), where you need to maintain a historical record of how data has changed.
+
+*   **dbt macros**: Macros in dbt are reusable pieces of SQL code, similar to functions in traditional programming languages. They are defined using the Jinja templating language and allow you to write DRY (Don't Repeat Yourself) code.
+
+*   **dbt packages**: In dbt, packages are standalone dbt projects that contain reusable models, macros, and tests. They are conceptually similar to libraries in programming languages, allowing you to import code from other projects into your own.
 
 *   **dbt analyses**: Analyses in dbt are SQL queries that are used for exploration and ad-hoc analysis. Unlike models, they are not materialized as tables or views in your data warehouse.
 ---

@@ -1,5 +1,8 @@
 -- This query evaluates seller performance based on total sales and the number of
 -- orders they have fulfilled.
+{{
+    config(tags = ['analyses', 'seller'])
+}}
 SELECT
     s.seller_id,
     SUM(foi.item_value) AS total_sales,

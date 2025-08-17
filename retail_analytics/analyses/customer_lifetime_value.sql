@@ -1,5 +1,8 @@
 -- This query calculates the total spending for each customer, which is a foundational
 -- metric for understanding customer value.
+{{
+    config(tags = ['analyses', 'customer'])
+}}
 SELECT
     c.customer_id,
     SUM(fo.total_order_value) AS total_spent

@@ -1,5 +1,8 @@
 -- This query segments customers based on their purchasing behavior, which can be
 -- used to tailor marketing campaigns.
+{{
+    config(tags = ['analyses', 'customer'])
+}}
 WITH customer_rfm AS (
     SELECT
         c.customer_id,

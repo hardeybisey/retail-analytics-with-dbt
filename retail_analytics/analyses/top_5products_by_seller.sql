@@ -1,5 +1,8 @@
 -- This query identifies the top-selling products for each seller, providing insights
 -- into product performance at a seller level.
+{{
+    config(tags = ['analyses', 'seller'])
+}}
 WITH ranked_products AS (
     SELECT
         s.seller_id,
