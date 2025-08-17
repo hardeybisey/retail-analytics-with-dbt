@@ -1,5 +1,8 @@
 -- This query calculates the average amount spent per order for each customer's state,
 -- which can reveal geographical purchasing trends.
+{{
+    config(tags = ['analyses'])
+}}
 SELECT
     c.state,
     AVG(fo.total_order_value) AS average_order_value
