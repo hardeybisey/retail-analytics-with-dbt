@@ -11,8 +11,12 @@ from typing import Optional
 import pandas as pd
 from faker import Faker
 
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    handlers=[logging.StreamHandler()],
+)
 logger = logging.getLogger(name="generator")
-
 
 # -------------------------------------------------------------------------------
 # Configuration
@@ -195,7 +199,7 @@ def generate_order_items(
     n_sellers: int = N_SELLERS,
 ) -> list[dict]:
     """Generate order items linked to an order."""
-    logger.info("Generating order_items")
+    # logger.info("Generating order_items")
     order_items = []
     seller_id = random.randint(1, n_sellers)
     shipping_limit_date = (
@@ -287,7 +291,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--output_dir",
         type=str,
-        default=".",
+        default="/data",
         help="Directory where CSV files will be saved.",
     )
     parser.add_argument(
