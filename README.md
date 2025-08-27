@@ -33,7 +33,7 @@ The data is structured to support analytics on customer behaviour, product sales
 ### **Data Dictionary**
 
 
-| Dataset Name              | Description                                                                                                                                                                                | Key Columns                                    |
+| Dataset Name              | Description                                                                                                                                                                                | Columns                                    |
 |--------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------|
 | **Customers**            | Contains customer information and location.                                            | `customer_id`, `customer_address`, `customer_zip_code`, `customer_state`, `customer_created_date`, `customer_updated_date` |
 | **Sellers**              | Data about sellers, including their location and identification. Used to trace product fulfilment.                                                                                         | `seller_id`, `seller_address`,`seller_zip_code`, `seller_state`, `seller_created_date`, `seller_updated_date` |
@@ -55,42 +55,48 @@ The data is structured to support analytics on customer behaviour, product sales
 ---
 
 ### Dimension
-| Table Name              | Type      | Grain                             | Description                                                              |
-|------------------------|-----------|-----------------------------------|--------------------------------------------------------------------------|
-| dim_customer           | Dimension | 1 row per customer_key      | Unique customer profile, independent of orders                           |         |
-| dim_seller             | Dimension | 1 row per seller_key               | Seller metadata and location                                             |
-| dim_product            | Dimension | 1 row per product_key              | Product metadata and physical attributes                                 |
-| dim_product_category   | Dimension | 1 row per category name           | English translation of product categories                                |
-| dim_date               | Dimension | 1 row per day                     | Date dimension for temporal analysis                                     |
+| Table Name              | Grain                             | Description                                                              |
+|------------------------|-----------------------------------|--------------------------------------------------------------------------|
+| dim_customer           | 1 row per customer_key      | Unique customer profile, independent of orders                           |         |
+| dim_seller             | 1 row per seller_key               | Seller metadata and location                                             |
+| dim_product            | 1 row per product_key              | Product metadata and physical attributes                                 |
+| dim_product_category   | 1 row per category_key           | Product categories                                |
+| dim_date               | 1 row per day                     | Date dimension for temporal analysis                                     |
 
 ---
 
 ### Facts
 
-| Table Name              | Type      | Grain                             | Description                                                              |
-|------------------------|-----------|-----------------------------------|--------------------------------------------------------------------------|
-| fact_orders            | Fact | 1 row per order_key                 | Order lifecycle: purchase, delivery, status                              |
-| fact_order_items       | Fact | 1 row per order_item_key(`order_id+item_id`)       | Item-level value, freight, product, seller                               |                          |
+| Table Name              | Grain                             | Description                                                              |
+|------------------------|-----------------------------------|--------------------------------------------------------------------------|
+| fact_orders            | 1 row per order_key                 | Order lifecycle: purchase, delivery, status                              |
+| fact_order_items       | 1 row per order_item_key(`order_id+item_id`)       | Item-level value, freight, product, seller                               |                          |
 
 ---
 ## Project Setup Instructions
 
 ### Set up your environment
 ```bash
-# 1. Rename the environment file
+# 1. clone the repo
+git clone https://github.com/hardeybisey/retail-analytics-with-dbt.git
+
+# 2. Change to the project directory
+cd retail-analytics-with-dbt
+
+# 3. Rename the environment file
 mv example.env .env
 
-# 2. Edit the .env file to include your Postgres credentials:
-DB_USER=<your_postgres_username>
-DB_PASSWORD=<your_postgres_password>
+# 4. Edit the .env file to include your Postgres credentials:
+PG_USER=<your_postgres_username>
+PG_PASSWORD=<your_postgres_password>
 
-# 3. Start Services with Docker
+# 5. Start Services with Docker
 docker compose up -d
 
-# 4. Check that the container is up, you should look for a container named `dbt`
+# 6. Check that the container is up, you should look for a container named `dbt`
 docker ps
 
-# 5. Open a shell session into the dbt container
+# 7. Open a shell session into the dbt container
 docker exec -it dbt bash
 ```
 
