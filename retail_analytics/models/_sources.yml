@@ -18,7 +18,7 @@ sources:
             data_type: text
             description: ""
           - name: customer_zip_code
-            data_type: integer
+            data_type: text
             description: "The zip code prefix of the customer's location."
           - name: customer_state
             data_type: text
@@ -45,7 +45,7 @@ sources:
             data_type: text
             description: ""
           - name: seller_zip_code
-            data_type: integer
+            data_type: text
             description: ""
           - name: seller_state
             data_type: text

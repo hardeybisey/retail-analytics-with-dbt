@@ -22,7 +22,7 @@
             seller_id,
             seller_address AS address,
             seller_state AS state,
-            seller_zip_code::integer AS zip_code_prefix,
+            seller_zip_code AS zip_code_prefix,
             seller_created_date::timestamp AS created_date,
             COALESCE(seller_updated_date, seller_created_date::timestamp) AS updated_date,
             ROW_NUMBER() OVER (PARTITION BY seller_id) AS row_num
