@@ -143,8 +143,6 @@ psql -U $POSTGRES_USER -d retail_analytics
 # 4. Preview the first 5 rows of dim_customer table.
 SELECT * FROM mart.dim_customer LIMIT 5;
 ```
-![](images/data_preview.png)
-
 
 ### DBT Lineage Diagram
 ![](images/dbt-dag.png)
@@ -152,21 +150,13 @@ SELECT * FROM mart.dim_customer LIMIT 5;
 ---
 ### DBT Concepts Explored
 
-*   **dbt seeds**: This feature allows you to load static data from CSV files directly into your data warehouse.
-
-*   **dbt source**: In dbt, a source is a way to name and describe the raw data that you load into your data warehouse. By defining sources, you can reference them in your models, test the quality of your raw data.
-
-*   **dbt ref**: The `ref` function is fundamental to building modular and dependent data models in dbt. It allows you to reference another model within your dbt project, creating a dependency between them.
-
-*   **dbt tags**: Tags are metadata labels that you can apply to your dbt resources, such as models, seeds, and snapshots. They help you organize and categorize your project, allowing you to selectively run or test specific parts of your project.
-
-*   **dbt snapshots**: Snapshots are a powerful feature for capturing and tracking changes to your data over time. They are particularly useful for managing slowly changing dimensions (SCDs), where you need to maintain a historical record of how data has changed.
-
-*   **dbt macros**: Macros in dbt are reusable pieces of SQL code, similar to functions in traditional programming languages. They are defined using the Jinja templating language and allow you to write DRY (Don't Repeat Yourself) code.
-
-*   **dbt packages**: In dbt, packages are standalone dbt projects that contain reusable models, macros, and tests. They are conceptually similar to libraries in programming languages, allowing you to import code from other projects into your own.
-
-*   **dbt analyses**: Analyses in dbt are SQL queries that are used for exploration and ad-hoc analysis. Unlike models, they are not materialized as tables or views in your data warehouse.
+*   [**dbt seeds**](https://docs.getdbt.com/docs/build/seeds)
+*   [**dbt sources**](https://docs.getdbt.com/docs/build/sources)
+*   [**dbt ref**](https://docs.getdbt.com/reference/dbt-jinja-functions/ref)
+*   [**dbt tags**](https://docs.getdbt.com/reference/resource-configs/tags)
+*   [**dbt snapshots**](https://docs.getdbt.com/docs/build/snapshots)
+*   [**dbt packages**](https://docs.getdbt.com/docs/build/packages)
+*   [**dbt analyses**](https://docs.getdbt.com/docs/build/analyses)
 ---
 
 ## Credits
