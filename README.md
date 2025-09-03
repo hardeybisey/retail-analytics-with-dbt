@@ -143,8 +143,6 @@ psql -U $POSTGRES_USER -d retail_analytics
 # 4. Preview the first 5 rows of dim_customer table.
 SELECT * FROM mart.dim_customer LIMIT 5;
 ```
-![](images/data_preview.png)
-
 
 ### DBT Lineage Diagram
 ![](images/dbt-dag.png)
