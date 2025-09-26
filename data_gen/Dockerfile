@@ -6,7 +6,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-RUN pip install --no-cache-dir Faker==37.5.3 pandas==2.3.1
+RUN pip install --no-cache-dir Faker==37.5.3 pandas[pyarrow]==2.3.1
 
 
 COPY generator.py .
