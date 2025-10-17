@@ -6,11 +6,13 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 from datetime import date, timedelta
 from itertools import product
 from pathlib import Path
-from typing import Optional
 
 import pandas as pd
 from faker import Faker
 
+# --------------------------------------------------------------------------------
+# Logging Configuration
+# --------------------------------------------------------------------------------
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
@@ -18,10 +20,9 @@ logging.basicConfig(
 )
 logger = logging.getLogger(name="generator")
 
-# -------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------
 # Configuration
 # --------------------------------------------------------------------------------
-
 N_SELLERS = 500
 N_CUSTOMERS = 5_000
 N_ORDERS = 10_000
@@ -36,7 +37,6 @@ ORDER_STATUS = [
     "APPROVED",
     "SHIPPED",
     "DELIVERED",
-    "CANCELED",
 ]
 
 BOX_CATALOGUE = {
@@ -102,8 +102,8 @@ SIZE_BASE_PRICE = {
 }
 
 
-# # -------------------------------------------------------------------------------
-# Utility Functions
+# --------------------------------------------------------------------------------
+# Data Generation Functions
 # --------------------------------------------------------------------------------
 def random_date(start=date(2020, 1, 1), end=date(2024, 12, 31)) -> date:
     """Generate a random date between `start` and `end`"""
@@ -111,47 +111,26 @@ def random_date(start=date(2020, 1, 1), end=date(2024, 12, 31)) -> date:
     return start + timedelta(seconds=random.randint(0, delta_seconds))
 
 
-def generate_product_category() -> list[dict]:
-    logger.info("Generating product categories")
-    categories = []
-    category_id = 1
-    for category, sub_categories in BOX_CATALOGUE.items():
-        for sub_cat in sub_categories:
-            categories.append(
-                {
-                    "product_category_id": f"{category_id:08d}",
-                    "product_category": category,
-                    "product_sub_category": sub_cat,
-                }
-            )
-            category_id += 1
-    return categories
-
-
-def generate_products(categories: list[dict]) -> list[dict]:
+def generate_products() -> list[dict]:
     logger.info("Generating products")
-    category_lookup = {
-        (c["product_category"], c["product_sub_category"]): c["product_category_id"]
-        for c in categories
-    }
     products = []
     product_id = 1
     for category, names in BOX_CATALOGUE.items():
-        for name, (size_label, dimensions) in product(names, BOX_SIZES.items()):
+        for product_name, (size_label, dimensions) in product(names, BOX_SIZES.items()):
             price = round(
                 SIZE_BASE_PRICE[size_label] * CATEGORY_PRICE_MULTIPLIER[category], 2
             )
             products.append(
                 {
                     "product_id": f"{product_id:08d}",
-                    "product_category_id": category_lookup[(category, name)],
-                    "product_name": name,
+                    "product_category": category,
+                    "product_name": product_name,
                     "product_size_label": size_label,
                     "product_width_cm": dimensions["width"],
                     "product_length_cm": dimensions["length"],
                     "product_height_cm": dimensions["height"],
                     "product_price": price,
-                    "product_created_date": date(2020, 1, 11),
+                    "product_created_date": date(2020, 1, 1),
                     "product_updated_date": None,
                 }
             )
@@ -196,16 +175,11 @@ def generate_sellers(n_sellers: int = N_SELLERS) -> dict:
 
 def generate_order_items(
     order_id: str,
-    delivered_carrier_date: Optional[date],
+    shipping_limit_date: date,
     products_list: list[dict],
     seller_id: str,
 ) -> list[dict]:
     """Generate order items linked to an order."""
-    shipping_limit_date = (
-        delivered_carrier_date + timedelta(days=random.randint(-1, 3))
-        if delivered_carrier_date
-        else None
-    )
     return [
         {
             "order_id": order_id,
@@ -244,7 +218,7 @@ def _generate_orders(
 
         # Ensure seller was created before purchase date
         valid_seller: str = (
-            sellers.loc[sellers["seller_created_date"] <= purchase_date, "seller_id"]
+            sellers[sellers["seller_created_date"] <= purchase_date]["seller_id"]
             .sample(1)
             .iat[0]
         )
@@ -258,12 +232,12 @@ def _generate_orders(
             "SHIPPED",
             "DELIVERED",
         ):
-            approved_at = purchase_date + timedelta(days=random.randint(0, 3))
+            approved_at = purchase_date + timedelta(days=random.randint(0, 1))
         if status in ("SHIPPED", "DELIVERED"):
-            delivered_carrier_date = approved_at + timedelta(days=random.randint(1, 5))
+            estimated_delivery_date = approved_at + timedelta(days=random.randint(1, 3))
         if status == "DELIVERED":
-            estimated_delivery_date = delivered_carrier_date + timedelta(
-                days=random.randint(1, 3)
+            delivered_carrier_date = estimated_delivery_date + timedelta(
+                days=random.randint(1, 2)
             )
             delivered_customer_date = estimated_delivery_date + timedelta(
                 days=random.randint(0, 2)
@@ -283,11 +257,13 @@ def _generate_orders(
             }
         )
 
+        base_date = delivered_carrier_date or approved_at or purchase_date
+
         order_items = generate_order_items(
-            order_id,
-            delivered_carrier_date,
-            random.choices(products, k=random.randint(1, 5)),
-            valid_seller,
+            order_id=order_id,
+            shipping_limit_date=base_date + timedelta(days=random.randint(-1, 3)),
+            products_list=random.choices(products, k=random.randint(1, 5)),
+            seller_id=valid_seller,
         )
         all_order_items.extend(order_items)
 
@@ -325,9 +301,6 @@ def generate_orders_threaded(
     return orders, all_order_items
 
 
-# --------------------------------------------------------------------------------
-# Main Execution
-# --------------------------------------------------------------------------------
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Generate synthetic e-commerce datasets."
@@ -359,9 +332,7 @@ if __name__ == "__main__":
     path.mkdir(parents=True, exist_ok=True)
 
     logger.info("Synthetic data generation started")
-
-    product_category = generate_product_category()
-    products = generate_products(product_category)
+    products = generate_products()
     customers = generate_customers(n_customers=args.customers)
     sellers = pd.DataFrame(generate_sellers(n_sellers=args.sellers).values())
     orders, order_items = generate_orders_threaded(
@@ -372,9 +343,6 @@ if __name__ == "__main__":
     logger.info(f"Saving data to {path}")
 
     if args.format == "parquet":
-        pd.DataFrame(product_category).to_parquet(
-            path / "product_category.parquet", index=False
-        )
         pd.DataFrame(products).to_parquet(path / "products.parquet", index=False)
         pd.DataFrame(customers.values()).to_parquet(
             path / "customers.parquet", index=False
@@ -383,9 +351,6 @@ if __name__ == "__main__":
         pd.DataFrame(orders).to_parquet(path / "orders.parquet", index=False)
         pd.DataFrame(order_items).to_parquet(path / "order_items.parquet", index=False)
     else:
-        pd.DataFrame(product_category).to_csv(
-            path / "product_category.csv", index=False
-        )
         pd.DataFrame(products).to_csv(path / "products.csv", index=False)
         pd.DataFrame(customers.values()).to_csv(path / "customers.csv", index=False)
         sellers.to_csv(path / "sellers.csv", index=False)
