@@ -18,15 +18,13 @@ Try running the following commands:
 ### Generating source (Note:This doesn't work with duckdb)
 ```bash
 # generating source yaml fine from the current target. more info at https://hub.getdbt.com/dbt-labs/codegen/latest/
-dbt --quiet run-operation generate_source --args '{"schema_name": "name", "generate_columns": true, "include_descriptions": true}' > models/_sources.yml
 
-# generating base model from the current sources.
-dbt --quiet run-operation generate_base_model --args '{"source_name": "csv_input", "table_name": "table_name"}' > <path-to-save/file-name>.sql
+# Generate model yaml files for all defined sources
+dbt --quiet run-operation generate_source --args '{"schema_name": "csv_input", "generate_columns": true, "include_descriptions": true}' > `your_source_file_name.yml`
 
-# generqte model yaml.
-dbt run-operation generate_model_yaml --args '{"include_data_types":true, "upstream_descriptions":true, "model_names": ["raw_customers","raw_geolocation", "raw_order_items","raw_order_payments","raw_order_reviews","raw_orders","raw_products","raw_sellers", "raw_product_category_name_translation"]}'
+# Generate sql files for base model for each defined sources
+dbt --quiet run-operation generate_base_model --args '{"source_name": "csv_input", "table_name": "order_items"}' > order_items.sql
 
-# dbt run-operation codegen.create_base_models --args '{source_name: my-source, tables: ["olist_customers","olist_geolocation", "olist_order_items","olist_order_payments","olist_order_reviews","olist_orders","olist_products","olist_sellers", "product_category_name_translation"]}'
-
-# source dbt_packages/codegen/bash_scripts/base_model_creation.sh "csv_input"["olist_customers","olist_geolocation", "olist_order_items","olist_order_payments","olist_order_reviews","olist_orders","olist_products","olist_sellers", "product_category_name_translation"]
+# Generate model yaml files for a list of models. Note: The models must have been materialised for this command to work.
+dbt --quiet run-operation generate_model_yaml --args '{"include_data_types":true, "upstream_descriptions":true, "model_names": ["snapshot_customer","snapshot_products", "snapshot_sellers"]}' > `your_source_file_name.yml`
 ```
