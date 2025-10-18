@@ -8,8 +8,7 @@ This project provides a simple data generator using Python with `Faker` and `pan
 
 The script generates the following CSV files in the output directory:
 
-1. **`product_category.csv`** - Contains product categories and sub-categories with unique IDs.
-2. **`products.csv`** -  Detailed product catalogue with dimensions, size, and price.
+2. **`products.csv`** -  Detailed product catalogue with category, dimensions, size, and price.
 3. **`customers.csv`** - Fake customers with addresses, states, and signup dates.
 4. **`sellers.csv`** - Fake sellers with addresses and registration dates.
 5. **`orders.csv`** - Orders with statuses, timestamps, and customer references.
@@ -27,7 +26,11 @@ The script generates the following CSV files in the output directory:
 2. Generate datasets:
    This comand runs the generator and store the result in a data folder in the current directory.
    ```bash
+   # This runs the data-generator and stores the result in a csv format
    docker run --rm -v $(pwd)/data:/data data-generator
+
+   # To customise the number of data generated and format, use
+   docker run --rm -v $(pwd)/csv_data:/data iadebisi/ecommerce-data-generator --customers n --sellers n --orders n --format `(parquet/csv)`
    ```
 
 ### Arguments
@@ -38,5 +41,6 @@ The script generates the following CSV files in the output directory:
 | `--customers`  | int  | 5000    | Number of customers to generate       |
 | `--sellers`    | int  | 500     | Number of sellers to generate         |
 | `--orders`     | int  | 10000   | Number of orders to generate          |
+| `--format`     | str  | csv     | output file format (csv, parquet)     |
 
 ---

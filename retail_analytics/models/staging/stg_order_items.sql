@@ -23,6 +23,7 @@ deduplicated_order_items AS (
 
     FROM source
 
+
 )
 
 SELECT
@@ -30,8 +31,8 @@ SELECT
     order_item_id,
     product_id,
     seller_id,
+    shipping_limit_date,
     item_value,
-    freight_value,
-    shipping_limit_date
+    freight_value
 FROM deduplicated_order_items
 WHERE row_num = 1

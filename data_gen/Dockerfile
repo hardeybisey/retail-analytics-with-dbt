@@ -1,13 +1,8 @@
-FROM python:3.11-slim
+FROM python:3.13-slim
 
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN pip install --no-cache-dir Faker==37.5.3 pandas==2.3.1
-
+RUN pip install --no-cache-dir Faker==37.5.3 pandas[pyarrow]==2.3.1
 
 COPY generator.py .
 

@@ -1,11 +1,14 @@
+name: dbt
 services:
   data-gen:
-    build: data_gen/
+    image: iadebisi/ecommerce-data-generator
+    # build: data_gen/
     command: >
       --output_dir /data
-      --customers 5000
-      --sellers 1000
-      --orders 200000
+      --customers 1000
+      --sellers 100
+      --orders 50000
+      --format csv
     volumes:
         - ./retail_analytics/seeds:/data
 

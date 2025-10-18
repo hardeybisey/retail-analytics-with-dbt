@@ -2,8 +2,8 @@
 {{
     config(tags = ['obt'])
 }}
-with f_orders AS (
-    SELECT * FROM {{ ref('fact_orders') }}
+with fact_orders_summary AS (
+    SELECT * FROM {{ ref('fact_order_summary') }}
 ),
 d_customer AS (
     SELECT * FROM {{ ref('dim_customer') }}
@@ -12,11 +12,9 @@ d_date AS (
     SELECT * FROM {{ ref('dim_date') }}
 )
 SELECT
-    {{ dbt_utils.star(from=ref('fact_orders'), relation_alias='f_orders', except=[
-        "order_key", "order_date_key"
-    ]) }},
-    {{ dbt_utils.star(from=ref('dim_customer'), relation_alias='d_customer', except=["customer_key"]) }},
+    {{ dbt_utils.star(from=ref('fact_order_summary'), relation_alias='fact_orders_summary') }},
+    {{ dbt_utils.star(from=ref('dim_customer'), relation_alias='d_customer', except=["customer_sk"]) }},
     {{ dbt_utils.star(from=ref('dim_date'), relation_alias='d_date', except=["date_key"]) }}
-FROM f_orders
-LEFT JOIN d_customer ON f_orders.customer_key = d_customer.customer_key
-LEFT JOIN d_date ON f_orders.order_date_key = d_date.date_day
+FROM fact_orders_summary
+LEFT JOIN d_customer ON fact_orders_summary.customer_sk = d_customer.customer_sk
+LEFT JOIN d_date ON fact_orders_summary.order_date_key = d_date.date_day

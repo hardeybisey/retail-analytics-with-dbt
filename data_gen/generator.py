@@ -2,15 +2,17 @@ import argparse
 import logging
 import os
 import random
-from datetime import date, datetime, timedelta
+from concurrent.futures import ProcessPoolExecutor, as_completed
+from datetime import date, timedelta
 from itertools import product
 from pathlib import Path
-from random import randint
-from typing import Optional
 
 import pandas as pd
 from faker import Faker
 
+# --------------------------------------------------------------------------------
+# Logging Configuration
+# --------------------------------------------------------------------------------
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
@@ -18,52 +20,61 @@ logging.basicConfig(
 )
 logger = logging.getLogger(name="generator")
 
-# -------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------
 # Configuration
 # --------------------------------------------------------------------------------
-
 N_SELLERS = 500
 N_CUSTOMERS = 5_000
 N_ORDERS = 10_000
 LOCALE = "en_US"
 
 fake = Faker(LOCALE)
+Faker.seed(42)
+random.seed(42)
 
 ORDER_STATUS = [
-    "shipped",
-    "unavailable",
-    "created",
-    "delivered",
-    "invoiced",
-    "cancelled",
-    "processing",
-    "approved",
+    "PROCESSING",
+    "APPROVED",
+    "SHIPPED",
+    "DELIVERED",
 ]
 
 BOX_CATALOGUE = {
     "general_purpose": [
         "Boxify Classic",
-        "StowMate",
-        "NeatNest",
-        "TidyVault",
+        "Stow Mate",
+        "Neat Nest",
+        "Tidy Vault",
         "Cubix Hold",
     ],
     "premium": [
-        "LuxeFold",
+        "Luxe Fold",
         "Velari Box",
         "Monobox Signature",
         "EvoCrate",
         "Silhouette Box",
     ],
-    "eco_friendly": ["GreenPack", "EcoNest Crate", "ReLeaf Box", "EarthFold", "Biobox"],
-    "heavy_duty": ["HaulPro", "StrongStash", "LoadBoxer", "TransitMax", "GripBox"],
-    "gift_decorative": ["CharmCrate", "GiftyGlow", "WrapNest", "AuraBox", "VelvetCase"],
+    "eco_friendly": [
+        "Green Pack",
+        "Eco Nest Crate",
+        "ReLeaf Box",
+        "Earth Fold",
+        "Bio Box",
+    ],
+    "heavy_duty": ["Haul Pro", "Strong Stash", "Load Boxer", "Transit Max", "Grip Box"],
+    "gift_decorative": [
+        "Charm Crate",
+        "Gifty Glow",
+        "Wrap Nest",
+        "Aura Box",
+        "Velvet Case",
+    ],
     "flatpack_stackable": [
-        "StackRight",
-        "FoldaBox",
-        "SlimNest",
-        "SnapCrate",
-        "QuickStack",
+        "Stack Right",
+        "Fold Box",
+        "Slim Nest",
+        "Snap Crate",
+        "Quick Stack",
     ],
 }
 
@@ -83,7 +94,6 @@ CATEGORY_PRICE_MULTIPLIER = {
     "flatpack_stackable": 1.15,
 }
 
-
 SIZE_BASE_PRICE = {
     "Small": 32.00,
     "Medium": 55.00,
@@ -92,48 +102,21 @@ SIZE_BASE_PRICE = {
 }
 
 
-# -------------------------------------------------------------------------------
-# Utility Functions
 # --------------------------------------------------------------------------------
-def random_date(start=datetime(2020, 1, 1), end=datetime(2024, 12, 31)):
-    """Generate a random datetime between `start` and `end`"""
-    result = start + timedelta(seconds=randint(0, int((end - start).total_seconds())))
-    return result.date()
+# Data Generation Functions
+# --------------------------------------------------------------------------------
+def random_date(start=date(2020, 1, 1), end=date(2024, 12, 31)) -> date:
+    """Generate a random date between `start` and `end`"""
+    delta_seconds = int((end - start).total_seconds())
+    return start + timedelta(seconds=random.randint(0, delta_seconds))
 
 
-def generate_product_category() -> list[dict]:
-    """Generate product catalogue with prices based on category and size."""
-    logger.info("Generating products categories")
-    categories = []
-    category_id = 1
-    for category, sub_categories in BOX_CATALOGUE.items():
-        sub_cats = []
-        for sub_cat in sub_categories:
-            sub_cats.append(
-                {
-                    "product_category_id": f"{category_id:08d}",
-                    "product_category": category,
-                    "product_sub_category": sub_cat,
-                }
-            )
-            category_id += 1
-        categories.extend(sub_cats)
-    return categories
-
-
-def generate_products(categories: list[dict]) -> list[dict]:
-    """Generate product catalogue with prices based on category and size."""
+def generate_products() -> list[dict]:
     logger.info("Generating products")
-    category_lookup = {
-        (cat["product_category"], cat["product_sub_category"]): cat[
-            "product_category_id"
-        ]
-        for cat in categories
-    }
     products = []
     product_id = 1
     for category, names in BOX_CATALOGUE.items():
-        for name, (size_label, dimensions) in product(names, BOX_SIZES.items()):
+        for product_name, (size_label, dimensions) in product(names, BOX_SIZES.items()):
             price = round(
                 SIZE_BASE_PRICE[size_label] * CATEGORY_PRICE_MULTIPLIER[category], 2
             )
@@ -141,149 +124,183 @@ def generate_products(categories: list[dict]) -> list[dict]:
                 {
                     "product_id": f"{product_id:08d}",
                     "product_category": category,
-                    "product_category_id": category_lookup.get((category, name)),
-                    "product_name": name,
+                    "product_name": product_name,
                     "product_size_label": size_label,
                     "product_width_cm": dimensions["width"],
                     "product_length_cm": dimensions["length"],
                     "product_height_cm": dimensions["height"],
                     "product_price": price,
+                    "product_created_date": date(2020, 1, 1),
+                    "product_updated_date": None,
                 }
             )
             product_id += 1
     return products
 
 
-def generate_customers(n_customers: int = N_CUSTOMERS) -> list[dict]:
-    """Generate random customer data."""
+def generate_customers(n_customers: int = N_CUSTOMERS) -> dict:
     logger.info("Generating customers")
-    customers = []
+    customers = {}
+    states = [fake.state_abbr() for _ in range(n_customers)]
     for i in range(n_customers):
-        state_abbr = fake.state_abbr()
-        customers.append(
-            {
-                "customer_id": f"{i+1:08d}",
-                "customer_address": fake.unique.street_address(),
-                "customer_state": state_abbr,
-                "customer_zip_code": fake.zipcode_in_state(state_abbr),
-                "customer_created_date": random_date(end=datetime(2023, 12, 31)),
-                "customer_updated_date": None,
-            }
-        )
+        state_abbr = states[i]
+        cid = f"{i + 1:08d}"
+        customers[cid] = {
+            "customer_id": cid,
+            "customer_address": fake.street_address(),
+            "customer_state": state_abbr,
+            "customer_zip_code": fake.zipcode_in_state(state_abbr),
+            "customer_created_date": random_date(end=date(2023, 12, 31)),
+            "customer_updated_date": None,
+        }
     return customers
 
 
-def generate_sellers(n_sellers: int = N_SELLERS) -> list[dict]:
-    """Generate random seller data."""
+def generate_sellers(n_sellers: int = N_SELLERS) -> dict:
     logger.info("Generating sellers")
-    sellers = []
+    sellers = {}
+    states = [fake.state_abbr() for _ in range(n_sellers)]
     for i in range(n_sellers):
-        state_abbr = fake.state_abbr()
-        sellers.append(
-            {
-                "seller_id": f"{i+1:08d}",
-                "seller_address": fake.unique.street_address(),
-                "seller_state": state_abbr,
-                "seller_zip_code": fake.zipcode_in_state(state_abbr),
-                "seller_created_date": random_date(end=datetime(2023, 7, 31)),
-                "seller_updated_date": None,
-            }
-        )
+        sid = f"{i + 1:08d}"
+        sellers[sid] = {
+            "seller_id": sid,
+            "seller_address": fake.street_address(),
+            "seller_state": states[i],
+            "seller_zip_code": fake.zipcode_in_state(states[i]),
+            "seller_created_date": random_date(end=date(2023, 7, 31)),
+            "seller_updated_date": None,
+        }
     return sellers
 
 
 def generate_order_items(
     order_id: str,
-    delivered_carrier_date: Optional[date],
+    shipping_limit_date: date,
     products_list: list[dict],
-    n_sellers: int = N_SELLERS,
+    seller_id: str,
 ) -> list[dict]:
     """Generate order items linked to an order."""
-    # logger.info("Generating order_items")
-    order_items = []
-    seller_id = random.randint(1, n_sellers)
-    shipping_limit_date = (
-        delivered_carrier_date + timedelta(days=random.randint(-1, 3))
-        if delivered_carrier_date
-        else None
-    )
-    for idx, product in enumerate(products_list):
-        multiplier = random.uniform(0.09, 0.35)
-        order_items.append(
-            {
-                "order_id": order_id,
-                "order_item_id": idx,
-                "product_id": product["product_id"],
-                "seller_id": f"{seller_id:08d}",
-                "shipping_limit_date": shipping_limit_date,
-                "price": product["product_price"],
-                "freight_value": round(product["product_price"] * multiplier, 2),
-            }
-        )
-    return order_items
+    return [
+        {
+            "order_id": order_id,
+            "order_item_id": idx,
+            "product_id": p["product_id"],
+            "seller_id": seller_id,
+            "shipping_limit_date": shipping_limit_date,
+            "price": p["product_price"],
+            "freight_value": round(p["product_price"] * random.uniform(0.09, 0.35), 2),
+        }
+        for idx, p in enumerate(products_list)
+    ]
 
 
-def generate_orders(
-    products: list[dict], n_customers: int = N_CUSTOMERS, n_orders: int = N_ORDERS
+def _generate_orders(
+    customers: dict[str, dict],
+    sellers: pd.DataFrame,
+    products: list[dict],
+    order_start_id: int,
+    order_end_id: int,
 ) -> tuple[list[dict], list[dict]]:
-    logger.info("Generating orders")
+    logger.info(
+        f"Generating orders from {order_start_id} to {order_end_id} on PID {os.getpid()}"
+    )
     orders = []
     all_order_items = []
-    for index in range(n_orders):
-        random_customer = random.randint(1, n_customers)
+    customer_ids = list(customers.keys())
+
+    for idx in range(order_start_id, order_end_id):
+        customer_id = random.choice(customer_ids)
         status = random.choice(ORDER_STATUS)
-        purchase_date = random_date()
-        approved_at = delivered_carrier_date = estimated_delivery_date = (
+        start_date = customers[customer_id]["customer_created_date"]
+
+        # Ensure order date is after customer creation date
+        purchase_date = random_date(start=start_date)
+
+        # Ensure seller was created before purchase date
+        valid_seller: str = (
+            sellers[sellers["seller_created_date"] <= purchase_date]["seller_id"]
+            .sample(1)
+            .iat[0]
+        )
+
+        approved_at = estimated_delivery_date = delivered_carrier_date = (
             delivered_customer_date
         ) = None
 
-        if status in [
-            "created",
-            "approved",
-            "processing",
-            "invoiced",
-            "shipped",
-            "delivered",
-        ]:
-            approved_at = purchase_date + timedelta(days=random.randint(0, 3))
-        if status in ["shipped", "delivered"]:
-            delivered_carrier_date = approved_at + timedelta(days=random.randint(1, 5))
-        if status == "delivered":
-            estimated_delivery_date = delivered_carrier_date + timedelta(
-                days=random.randint(1, 3)
+        if status in (
+            "APPROVED",
+            "SHIPPED",
+            "DELIVERED",
+        ):
+            approved_at = purchase_date + timedelta(days=random.randint(0, 1))
+        if status in ("SHIPPED", "DELIVERED"):
+            estimated_delivery_date = approved_at + timedelta(days=random.randint(1, 3))
+        if status == "DELIVERED":
+            delivered_carrier_date = estimated_delivery_date + timedelta(
+                days=random.randint(1, 2)
             )
             delivered_customer_date = estimated_delivery_date + timedelta(
                 days=random.randint(0, 2)
             )
-        if status in ["cancelled", "unavailable"]:
-            approved_at = None
-            delivered_carrier_date = None
-            estimated_delivery_date = None
 
-        order = {
-            "order_id": f"{index+1:08d}",
-            "customer_id": f"{random_customer:08d}",
-            "order_status": status,
-            "order_purchase_date": purchase_date,
-            "order_approved_at": approved_at,
-            "order_delivered_carrier_date": delivered_carrier_date,
-            "order_delivered_customer_date": delivered_customer_date,
-            "order_estimated_delivery_date": estimated_delivery_date,
-        }
-        orders.append(order)
+        order_id = f"{idx + 1:08d}"
+        orders.append(
+            {
+                "order_id": order_id,
+                "customer_id": customer_id,
+                "order_status": status,
+                "order_purchase_date": purchase_date,
+                "order_approved_at": approved_at,
+                "order_delivered_carrier_date": delivered_carrier_date,
+                "order_delivered_customer_date": delivered_customer_date,
+                "order_estimated_delivery_date": estimated_delivery_date,
+            }
+        )
+
+        base_date = delivered_carrier_date or approved_at or purchase_date
+
         order_items = generate_order_items(
-            order_id=f"{index+1:08d}",
-            delivered_carrier_date=delivered_carrier_date,
+            order_id=order_id,
+            shipping_limit_date=base_date + timedelta(days=random.randint(-1, 3)),
             products_list=random.choices(products, k=random.randint(1, 5)),
+            seller_id=valid_seller,
         )
         all_order_items.extend(order_items)
 
     return orders, all_order_items
 
 
-# --------------------------------------------------------------------------------
-# Main Execution
-# --------------------------------------------------------------------------------
+def generate_orders_threaded(
+    customers: dict[str, dict],
+    sellers: pd.DataFrame,
+    products: list[dict],
+    n_orders: int = N_ORDERS,
+    n_threads: int = 4,
+) -> tuple[list[dict], list[dict]]:
+    """Generate orders using multiple threads."""
+    logger.info(f"Generating {n_orders} orders using {n_threads} threads")
+    orders = []
+    all_order_items = []
+    futures = []
+    with ProcessPoolExecutor(max_workers=n_threads) as executor:
+        orders_per_thread = n_orders // n_threads
+        for i in range(n_threads):
+            start_id = i * orders_per_thread
+            end_id = (i + 1) * orders_per_thread
+            futures.append(
+                executor.submit(
+                    _generate_orders, customers, sellers, products, start_id, end_id
+                )
+            )
+
+        for future in as_completed(futures):
+            thread_orders, thread_order_items = future.result()
+            orders.extend(thread_orders)
+            all_order_items.extend(thread_order_items)
+
+    return orders, all_order_items
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Generate synthetic e-commerce datasets."
@@ -306,27 +323,38 @@ if __name__ == "__main__":
     parser.add_argument(
         "--orders", type=int, default=N_ORDERS, help="Number of orders to generate."
     )
+    parser.add_argument(
+        "--format", type=str, default="csv", help="Output file format (csv or parquet)."
+    )
     args = parser.parse_args()
-    os.makedirs(args.output_dir, exist_ok=True)
 
     path = Path(args.output_dir)
+    path.mkdir(parents=True, exist_ok=True)
 
-    logger.info("Synthetic data generating started")
-
-    product_category = generate_product_category()
-    products = generate_products(product_category)
+    logger.info("Synthetic data generation started")
+    products = generate_products()
     customers = generate_customers(n_customers=args.customers)
-    sellers = generate_sellers(n_sellers=args.sellers)
-    orders, order_items = generate_orders(
-        products, n_customers=args.customers, n_orders=args.orders
+    sellers = pd.DataFrame(generate_sellers(n_sellers=args.sellers).values())
+    orders, order_items = generate_orders_threaded(
+        customers, sellers, products, args.orders, n_threads=os.cpu_count() or 4
     )
-    logger.info("Synthetic data generating completed")
 
-    logger.info(f"Saving data to disk at {path} directory")
-    pd.DataFrame(product_category).to_csv(path / "product_category.csv", index=False)
-    pd.DataFrame(products).to_csv(path / "products.csv", index=False)
-    pd.DataFrame(customers).to_csv(path / "customers.csv", index=False)
-    pd.DataFrame(sellers).to_csv(path / "sellers.csv", index=False)
-    pd.DataFrame(orders).to_csv(path / "orders.csv", index=False)
-    pd.DataFrame(order_items).to_csv(path / "order_items.csv", index=False)
-    logger.info(f"Saving data to disk completed")
+    logger.info("Synthetic data generation completed")
+    logger.info(f"Saving data to {path}")
+
+    if args.format == "parquet":
+        pd.DataFrame(products).to_parquet(path / "products.parquet", index=False)
+        pd.DataFrame(customers.values()).to_parquet(
+            path / "customers.parquet", index=False
+        )
+        sellers.to_parquet(path / "sellers.parquet", index=False)
+        pd.DataFrame(orders).to_parquet(path / "orders.parquet", index=False)
+        pd.DataFrame(order_items).to_parquet(path / "order_items.parquet", index=False)
+    else:
+        pd.DataFrame(products).to_csv(path / "products.csv", index=False)
+        pd.DataFrame(customers.values()).to_csv(path / "customers.csv", index=False)
+        sellers.to_csv(path / "sellers.csv", index=False)
+        pd.DataFrame(orders).to_csv(path / "orders.csv", index=False)
+        pd.DataFrame(order_items).to_csv(path / "order_items.csv", index=False)
+
+    logger.info("Data saved successfully")

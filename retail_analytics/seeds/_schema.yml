@@ -8,8 +8,9 @@ seeds:
         customer_address: varchar
         customer_state: varchar
         customer_zip_code: varchar
-        customer_created_date: timestamp
-        customer_updated_date: timestamp
+        customer_created_date: date
+        customer_updated_date: date
+
   - name: sellers
     config:
       full_refresh: True
@@ -18,27 +19,24 @@ seeds:
         seller_address: varchar
         seller_state: varchar
         seller_zip_code: varchar
-        seller_created_date: timestamp
-        seller_updated_date: timestamp
+        seller_created_date: date
+        seller_updated_date: date
+
   - name: products
     config:
       full_refresh: True
       column_types:
         product_id: varchar
+        product_name: varchar
         product_category: varchar
-        product_category_id: varchar
         product_size_label: varchar
         product_width_cm: float
         product_length_cm: float
         product_height_cm: float
         product_price: float
-  - name: product_category
-    config:
-      full_refresh: True
-      column_types:
-        product_category_id: varchar
-        product_category: varchar
-        product_sub_category: varchar
+        product_created_date: date
+        product_updated_date: date
+
   - name: order_items
     config:
       full_refresh: True
@@ -47,9 +45,10 @@ seeds:
         order_item_id: integer
         product_id: varchar
         seller_id: varchar
-        shipping_limit_date: timestamp
+        shipping_limit_date: date
         price: float
         freight_value: float
+
   - name: orders
     config:
       full_refresh: True
@@ -57,8 +56,8 @@ seeds:
         order_id: varchar
         customer_id: varchar
         order_status: varchar
-        order_purchase_date: timestamp
-        order_approved_at: timestamp
-        order_delivered_carrier_date: timestamp
-        order_delivered_customer_date: timestamp
-        order_estimated_delivery_date: timestamp
+        order_purchase_date: date
+        order_approved_at: date
+        order_delivered_carrier_date: date
+        order_delivered_customer_date: date
+        order_estimated_delivery_date: date

@@ -1,38 +1,76 @@
 version: 2
 
 models:
-  - name: fact_orders
+  - name: fact_order_items
     description: ""
+    config:
+      contract:
+        enforced: True
     columns:
-      - name: order_key
-        data_type: text
-        description: ""
-        tests:
-          - not_null
-          - unique
+      - name: order_id
+        data_type: varchar
+        description: "unique identifier for each order"
 
-      - name: customer_key
-        data_type: text
+      - name: order_item_id
+        data_type: integer
+        description: "ID denoting the sequence of item in an order"
+
+      - name: item_value
+        data_type: float
         description: ""
-        tests:
-          - not_null
+
+      - name: freight_value
+        data_type: float
+        description: "Shipping amount for each item in the order."
+
+      - name: product_sk
+        data_type: varchar
+        description: "Product dimension surrogate key."
+
+      - name: seller_sk
+        data_type: varchar
+        description: "Seller dimension surrogate key."
+
+      - name: order_date_key
+        data_type: date
+        description: ""
+
+      - name: shipping_limit_date_key
+        data_type: date
+        description: ""
+
+  - name: fact_order_summary
+    description: ""
+    config:
+      contract:
+        enforced: True
+    columns:
+      - name: customer_sk
+        data_type: varchar
+        description: "Customer dimension surrogate key."
 
       - name: order_id
-        data_type: text
-        description: "The unique identifier for each order."
-        tests:
-          - not_null
+        data_type: varchar
+        description: "unique identifier for each order"
 
       - name: item_count
         data_type: bigint
         description: ""
 
       - name: total_order_value
-        data_type: double precision
+        data_type: float
         description: ""
 
       - name: total_freight_value
-        data_type: double precision
+        data_type: float
+        description: ""
+
+      - name: order_status
+        data_type: varchar
+        description: "status of the order"
+
+      - name: order_date_key
+        data_type: date
         description: ""
 
       - name: min_shipping_limit_date_key
@@ -43,74 +81,136 @@ models:
         data_type: date
         description: ""
 
-      - name: order_date_key
-        data_type: date
-        description: "Shows the purchase timestamp."
-
-      - name: payment_approved_date_key
-        data_type: date
-        description: "Shows the payment approval timestamp."
-
       - name: delivered_to_carrier_date_key
         data_type: date
-        description: "Shows the order posting timestamp. When it was handled to the logistic partner."
+        description: ""
 
       - name: delivered_to_customer_date_key
         data_type: date
-        description: "Shows the actual order delivery date to the customer."
+        description: ""
 
       - name: estimated_delivery_date_key
         data_type: date
-        description: "Shows the estimated delivery date that was informed to customer at the purchase moment"
-
-      - name: order_status
-        data_type: text
-        description: "Reference to the order status (delivered, shipped, etc)"
-
-  - name: fact_order_items
-    description: ""
-    columns:
-      - name: order_item_key
-        data_type: text
-        description: ""
-        tests:
-          - not_null
-          - unique
-
-      - name: order_id
-        data_type: text
-        description: ""
-        tests:
-          - not_null
-
-      - name: order_item_id
-        data_type: integer
         description: ""
 
-      - name: item_value
-        data_type: double precision
-        description: ""
-
-      - name: freight_value
-        data_type: double precision
-        description: ""
-
-      - name: shipping_limit_date_key
+      - name: order_approved_date_key
         data_type: date
         description: ""
 
-      - name: order_timestamp
-        data_type: timestamp without time zone
-        description: ""
 
-      - name: product_key
-        data_type: text
-        description: ""
-        tests:
-          - not_null
 
-      - name: seller_key
-        data_type: text
-        description: ""
-        tests:
-          - not_null
+
+# models:
+#   - name: fact_orders
+#     description: ""
+#     columns:
+#       - name: order_key
+#         data_type: varchar
+#         description: ""
+#         tests:
+#           - not_null
+#           - unique
+
+#       - name: customer_key
+#         data_type: varchar
+#         description: ""
+#         tests:
+#           - not_null
+
+#       - name: order_id
+#         data_type: varchar
+#         description: "The unique identifier for each order."
+#         tests:
+#           - not_null
+
+#       - name: item_count
+#         data_type: bigint
+#         description: ""
+
+#       - name: total_order_value
+#         data_type: float
+#         description: ""
+
+#       - name: total_freight_value
+#         data_type: float
+#         description: ""
+
+#       - name: min_shipping_limit_date_key
+#         data_type: date
+#         description: ""
+
+#       - name: max_shipping_limit_date_key
+#         data_type: date
+#         description: ""
+
+#       - name: order_date_key
+#         data_type: date
+#         description: "Shows the purchase timestamp."
+
+#       - name: payment_approved_date_key
+#         data_type: date
+#         description: "Shows the payment approval timestamp."
+
+#       - name: delivered_to_carrier_date_key
+#         data_type: date
+#         description: "Shows the order posting timestamp. When it was handled to the logistic partner."
+
+#       - name: delivered_to_customer_date_key
+#         data_type: date
+#         description: "Shows the actual order delivery date to the customer."
+
+#       - name: estimated_delivery_date_key
+#         data_type: date
+#         description: "Shows the estimated delivery date that was informed to customer at the purchase moment"
+
+#       - name: order_status
+#         data_type: varchar
+#         description: "Reference to the order status (delivered, shipped, etc)"
+
+#   - name: fact_order_items
+#     description: ""
+#     columns:
+#       - name: order_item_key
+#         data_type: varchar
+#         description: ""
+#         tests:
+#           - not_null
+#           - unique
+
+#       - name: order_id
+#         data_type: varchar
+#         description: ""
+#         tests:
+#           - not_null
+
+#       - name: order_item_id
+#         data_type: integer
+#         description: ""
+
+#       - name: item_value
+#         data_type: float
+#         description: ""
+
+#       - name: freight_value
+#         data_type: float
+#         description: ""
+
+#       - name: shipping_limit_date_key
+#         data_type: date
+#         description: ""
+
+#       - name: order_timestamp
+#         data_type: timestamp without time zone
+#         description: ""
+
+#       - name: product_key
+#         data_type: varchar
+#         description: ""
+#         tests:
+#           - not_null
+
+#       - name: seller_key
+#         data_type: varchar
+#         description: ""
+#         tests:
+#           - not_null

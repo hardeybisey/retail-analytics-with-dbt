@@ -5,164 +5,140 @@ sources:
     description: ""
     tables:
       - name: customers
-        description: >
-          This dataset contains information about the customer and their location. It can be used to identify unique customers in the orders dataset and to determine the delivery location of orders. <br>
+        description: "This table contains information about the customers who place orders."
         meta:
           domain: customers
-        identifier: customers
         columns:
           - name: customer_id
-            data_type: text
+            data_type: varchar
             description: "The unique identifier for each customer."
           - name: customer_address
-            data_type: text
-            description: ""
-          - name: customer_zip_code
-            data_type: integer
-            description: "The zip code prefix of the customer's location."
+            data_type: varchar
+            description: "The customer's street address."
           - name: customer_state
-            data_type: text
-            description: ""
+            data_type: varchar
+            description: "The customer's address state."
+          - name: customer_zip_code
+            data_type: varchar
+            description: "The zip code prefix of the customer's location."
           - name: customer_created_date
-            data_type: datetime
+            data_type: date
             description: "When the customer first registered"
           - name: customer_updated_date
-            data_type: datetime
+            data_type: date
             description: "When the customer updated their registration details"
 
-
-      - name: sellers
-        description: >
-          This dataset contains information about the sellers who fulfilled specific orders. It can be used to find the seller's location and to identify which seller fulfilled each product order..
-        meta:
-          domain: sellers
-        identifier: sellers
-        columns:
-          - name: seller_id
-            data_type: text
-            description: ""
-          - name: seller_address
-            data_type: text
-            description: ""
-          - name: seller_zip_code
-            data_type: integer
-            description: ""
-          - name: seller_state
-            data_type: text
-            description: ""
-          - name: seller_created_date
-            data_type: datetime
-            description: "When the seller first registered"
-          - name: seller_updated_date
-            data_type: datetime
-            description: "When the seller updated their registration details"
-
-      - name: orders
-        description: >
-          This is the core dataset. From each order, you can find all other related information.
-        meta:
-          domain: orders
-        identifier: orders
-        columns:
-          - name: order_id
-            data_type: text
-            description: ""
-          - name: customer_id
-            data_type: text
-            description: ""
-          - name: order_status
-            data_type: text
-            description: ""
-          - name: order_purchase_date
-            data_type: datetime
-            description: ""
-          - name: order_approved_at
-            data_type: datetime
-            description: ""
-          - name: order_delivered_carrier_date
-            data_type: datetime
-            description: ""
-          - name: order_delivered_customer_date
-            data_type: datetime
-            description: ""
-          - name: order_estimated_delivery_date
-            data_type: datetime
-            description: ""
-
       - name: order_items
-        description: >
-          This dataset contains data about the items purchased within each order.
+        description: "This table contains information about each item in an order"
         meta:
           domain: orders
         identifier: order_items
         columns:
           - name: order_id
-            data_type: text
-            description: ""
+            data_type: varchar
+            description: "unique identifier for each order"
           - name: order_item_id
             data_type: integer
-            description: ""
+            description: "ID denoting the sequence of item in an order"
           - name: product_id
-            data_type: text
-            description: ""
+            data_type: varchar
+            description: "product identifier for each item in the order"
           - name: seller_id
-            data_type: text
-            description: ""
+            data_type: varchar
+            description: "unique identifier for seller who fulfilled the order"
           - name: shipping_limit_date
-            data_type: datetime
-            description: ""
+            data_type: date
+            description: "System generated exepected shipping date for the item "
           - name: price
             data_type: double precision
-            description: ""
+            description: "Product amount at the time of the order"
           - name: freight_value
             data_type: double precision
-            description: ""
+            description: "Shipping amount for each item in the order."
+
+      - name: orders
+        description: "This table contains information about each order placed by the customer"
+        meta:
+          domain: orders
+        columns:
+          - name: order_id
+            data_type: varchar
+            description: "unique identifier for each order"
+          - name: customer_id
+            data_type: varchar
+            description: "unique identifier for customer who placed the order"
+          - name: order_status
+            data_type: varchar
+            description: "status of the order"
+          - name: order_purchase_date
+            data_type: date
+            description: "Date the order was purchaed"
+          - name: order_approved_at
+            data_type: date
+            description: "Date the order was apporved in the system"
+          - name: order_delivered_carrier_date
+            data_type: date
+            description: "Date the order was delivered to the carrier from the seller"
+          - name: order_delivered_customer_date
+            data_type: date
+            description: "Date the order was delivered to the customer from the carrier"
+          - name: order_estimated_delivery_date
+            data_type: date
+            description: "System estimated delivery date to the customer when the order was approved."
 
       - name: products
-        description: >
-          This dataset contains information about each products sold.
-        meta:
-          domain: products
-        identifier: products
+        description: "This table containts information about each product"
         columns:
           - name: product_id
-            data_type: text
-            description: ""
+            data_type: varchar
+            description: "unique identifier for each product"
           - name: product_category
-            data_type: text
-            description: ""
+            data_type: varchar
+            description: "product category label"
           - name: product_name
-            data_type: text
-            description: ""
+            data_type: varchar
+            description: "product name"
           - name: product_size_label
-            data_type: text
-            description: ""
+            data_type: varchar
+            description: "product size label"
           - name: product_width_cm
-            data_type: float
-            description: ""
+            data_type: double precision
+            description: "Width of the product measured in CM"
           - name: product_length_cm
-            data_type: float
-            description: ""
+            data_type: double precision
+            description: "Length of the product measured in CM"
           - name: product_height_cm
-            data_type: float
-            description: ""
+            data_type: double precision
+            description: "Height of the product measured in CM"
           - name: product_price
-            data_type: float
-            description: ""
+            data_type: double precision
+            description: "Product price"
+          - name: product_created_date
+            data_type: date
+            description: "Date the product was created in the system"
+          - name: product_updated_date
+            data_type: date
+            description: "Date the product was updated in the system"
 
-      - name: product_category
-        description: >
-          This dataset contains information about categories of product sold.
-        meta:
-          domain: product
-        identifier: product_category
+      - name: sellers
+        description: "This table contains information about the sellers who fulfill orders."
+        domain: sellers
         columns:
-          - name: product_category_id
-            data_type: text
-            description: "Unique identifier for each product category/subcategory"
-          - name: product_category
-            data_type: text
-            description: ""
-          - name: product_sub_category
-            data_type: text
-            description: ""
+          - name: seller_id
+            data_type: varchar
+            description: "The unique identifier for each seller."
+          - name: seller_address
+            data_type: varchar
+            description: "The seller's street address."
+          - name: seller_state
+            data_type: varchar
+            description: "The seller's address state."
+          - name: seller_zip_code
+            data_type: varchar
+            description: "The zip code prefix of the seller's location."
+          - name: seller_created_date
+            data_type: date
+            description: "When the seller first registered"
+          - name: seller_updated_date
+            data_type: date
+            description: "When the seller updated their registration details"

@@ -1,233 +1,271 @@
 version: 2
 
 models:
-  - name: dim_seller
-    description: "Seller Dimension."
-    columns:
-      - name: seller_key
-        data_type: text
-        description: "The unique dimension key."
-        tests:
-          - not_null
-          - unique
-      - name: seller_id
-        data_type: text
-        description: "The unique identifier for each seller."
-        tests:
-          - not_null
-      - name: address
-        data_type: text
-        description: "full seller adrress line."
-        tests:
-          - not_null
-      - name: state
-        data_type: text
-        description: "seller state."
-        tests:
-          - not_null
-      - name: zip_code_prefix
-        data_type: text
-        description: "seller zip code"
-        tests:
-          - not_null
-      - name: valid_from_date
-        data_type: date
-        description: "seller record start date in dim table"
-        tests:
-          - not_null
-      - name: valid_to_date
-        data_type: date
-        description: "seller record end date in dim table"
-      - name: is_current
-        data_type: bool
-        description: "Signifies the activate row for each seller"
-
   - name: dim_customer
-    description: "The unique dimension key."
+    description: "Customer Dimension Table"
+    config:
+      contract:
+        enforced: True
     columns:
-      - name: customer_key
-        data_type: text
-        description: ""
-        tests:
-          - not_null
-          - unique
+      - name: customer_sk
+        data_type: varchar
+        description: "Customer dimension surrogate key."
+        constraints:
+          - type: not_null
+          - type: unique
+
       - name: customer_id
-        data_type: text
+        data_type: varchar
         description: "The unique identifier for each customer."
-        tests:
-          - not_null
+
       - name: address
-        data_type: text
-        description: "full customer adrress line."
-        tests:
-          - not_null
+        data_type: varchar
+        description: ""
+
       - name: state
-        data_type: text
-        description: "customer state."
-        tests:
-          - not_null
+        data_type: varchar
+        description: ""
+
       - name: zip_code_prefix
-        data_type: text
-        description: "customer zip code"
-        tests:
-          - not_null
-      - name: valid_from_date
+        data_type: varchar
+        description: ""
+
+      - name: customer_valid_from_date
         data_type: date
-        description: "customer record start date in dim table"
-        tests:
-          - not_null
-      - name: valid_to_date
+        description: ""
+
+      - name: customer_valid_to_date
         data_type: date
-        description: "customer record end date in dim table"
-      - name: is_current
-        data_type: bool
-        description: "Signifies the activate row for each customer"
+        description: ""
+
+      - name: customer_is_current
+        data_type: boolean
+        description: ""
 
   - name: dim_product
-    description: ""
+    description: "Product Dimension Table"
+    config:
+      contract:
+        enforced: True
     columns:
-      - name: product_key
-        data_type: text
-        description: ""
-        tests:
-          - not_null
-          - unique
+      - name: product_sk
+        data_type: varchar
+        description: "Product dimension surrogate key."
+        constraints:
+          - type: not_null
+          - type: unique
+
       - name: product_id
-        data_type: text
-        description: "The unique identifier for each product."
-      - name: category_key
-        data_type: text
-        description: "Foreign key to product category table."
-        tests:
-          - not_null
+        data_type: varchar
+        description: "unique identifier for each product"
+
+      - name: product_name
+        data_type: varchar
+        description: "product name"
+
+      - name: category_name
+        data_type: varchar
+        description: ""
+
       - name: price
         data_type: float
-        description: "product price"
+        description: ""
+
       - name: size_label
-        data_type: text
-        description: "number of product published photos"
+        data_type: varchar
+        description: ""
+
       - name: length_cm
         data_type: float
-        description: "product length measured in centimeters."
+        description: ""
+
       - name: height_cm
         data_type: float
-        description: "product height measured in centimeters."
+        description: ""
+
       - name: width_cm
         data_type: float
-        description: "product width measured in centimeters."
-
-  - name: dim_product_category
-    description: ""
-    columns:
-      - name: category_key
-        data_type: text
         description: ""
-        tests:
-          - not_null
-          - unique
-      - name: category_id
-        data_type: text
-        description: "The unique identifier for each product cetegory/subcategory."
-      - name: category_name
-        data_type: text
-        description: "product subcategory label."
-      - name: product_sub_category
-        data_type: text
-        description: "product price"
+
+      - name: product_valid_from_date
+        data_type: date
+        description: ""
+
+      - name: product_valid_to_date
+        data_type: date
+        description: ""
+
+      - name: product_is_current
+        data_type: boolean
+        description: ""
+
+
+  - name: dim_seller
+    description: "Seller Dimension Table"
+    config:
+      contract:
+        enforced: True
+    columns:
+      - name: seller_sk
+        data_type: varchar
+        description: "Seller dimension surrogate key."
+        constraints:
+          - type: not_null
+          - type: unique
+
+      - name: seller_id
+        data_type: varchar
+        description: "The unique identifier for each seller."
+
+      - name: address
+        data_type: varchar
+        description: ""
+
+      - name: state
+        data_type: varchar
+        description: ""
+
+      - name: zip_code_prefix
+        data_type: varchar
+        description: ""
+
+      - name: seller_valid_from_date
+        data_type: date
+        description: ""
+
+      - name: seller_valid_to_date
+        data_type: date
+        description: ""
+
+      - name: seller_is_current
+        data_type: boolean
+        description: ""
 
   - name: dim_date
-    description: ""
+    description: "Date Dimension Table"
+    config:
+      constraints:
+        enforced: True
     columns:
       - name: date_day
         data_type: date
         description: ""
-        tests:
-          - not_null
-          - unique
+        constraints:
+          - type: not_null
+          - type: unique
+
       - name: prior_date_day
         data_type: date
         description: ""
+
       - name: next_date_day
         data_type: date
         description: ""
+
       - name: prior_year_date_day
         data_type: date
         description: ""
+
       - name: prior_year_over_year_date_day
         data_type: date
         description: ""
+
       - name: day_of_week
         data_type: integer
         description: ""
+
       - name: day_of_week_name
-        data_type: text
+        data_type: varchar
         description: ""
+
       - name: day_of_week_name_short
-        data_type: text
+        data_type: varchar
         description: ""
+
       - name: day_of_month
-        data_type: double precision
+        data_type: float
         description: ""
+
       - name: day_of_year
-        data_type: double precision
+        data_type: float
         description: ""
+
       - name: week_start_date
         data_type: date
         description: ""
+
       - name: week_end_date
         data_type: date
         description: ""
+
       - name: prior_year_week_start_date
         data_type: date
         description: ""
+
       - name: prior_year_week_end_date
         data_type: date
         description: ""
+
       - name: week_of_year
         data_type: integer
         description: ""
+
       - name: iso_week_start_date
         data_type: date
         description: ""
+
       - name: iso_week_end_date
         data_type: date
         description: ""
+
       - name: prior_year_iso_week_start_date
         data_type: date
         description: ""
+
       - name: prior_year_iso_week_end_date
         data_type: date
         description: ""
+
       - name: iso_week_of_year
         data_type: integer
         description: ""
+
       - name: prior_year_week_of_year
         data_type: integer
         description: ""
+
       - name: prior_year_iso_week_of_year
         data_type: integer
         description: ""
+
       - name: month_of_year
         data_type: integer
         description: ""
+
       - name: month_name
-        data_type: text
+        data_type: varchar
         description: ""
+
       - name: month_name_short
-        data_type: text
+        data_type: varchar
         description: ""
+
       - name: month_start_date
         data_type: date
         description: ""
+
       - name: month_end_date
         data_type: date
         description: ""
+
       - name: prior_year_month_start_date
         data_type: date
         description: ""
+
       - name: prior_year_month_end_date
         data_type: date
         description: ""
+
       - name: quarter_of_year
         data_type: integer
         description: ""
@@ -251,3 +289,262 @@ models:
       - name: year_end_date
         data_type: date
         description: ""
+
+
+        constraints:
+          - type: not_null
+          - type: primary_key
+        #   - type: check
+        #     expression: "id > 0"
+
+# models:
+#   - name: dim_seller
+#     description: "Seller Dimension."
+#     columns:
+#       - name: seller_key
+#         data_type: varchar
+#         description: "The unique dimension key."
+#         tests:
+#           - not_null
+#           - unique
+#       - name: seller_id
+#         data_type: varchar
+#         description: "The unique identifier for each seller."
+#         tests:
+#           - not_null
+#       - name: address
+#         data_type: varchar
+#         description: "full seller adrress line."
+#         tests:
+#           - not_null
+#       - name: state
+#         data_type: varchar
+#         description: "seller state."
+#         tests:
+#           - not_null
+#       - name: zip_code_prefix
+#         data_type: varchar
+#         description: "seller zip code"
+#         tests:
+#           - not_null
+#       - name: valid_from_date
+#         data_type: date
+#         description: "seller record start date in dim table"
+#         tests:
+#           - not_null
+#       - name: valid_to_date
+#         data_type: date
+#         description: "seller record end date in dim table"
+#       - name: is_current
+#         data_type: bool
+#         description: "Signifies the activate row for each seller"
+
+#   - name: dim_customer
+#     description: "The unique dimension key."
+#     columns:
+#       - name: customer_key
+#         data_type: varchar
+#         description: ""
+#         tests:
+#           - not_null
+#           - unique
+#       - name: customer_id
+#         data_type: varchar
+#         description: "The unique identifier for each customer."
+#         tests:
+#           - not_null
+#       - name: address
+#         data_type: varchar
+#         description: "full customer adrress line."
+#         tests:
+#           - not_null
+#       - name: state
+#         data_type: varchar
+#         description: "customer state."
+#         tests:
+#           - not_null
+#       - name: zip_code_prefix
+#         data_type: varchar
+#         description: "customer zip code"
+#         tests:
+#           - not_null
+#       - name: valid_from_date
+#         data_type: date
+#         description: "customer record start date in dim table"
+#         tests:
+#           - not_null
+#       - name: valid_to_date
+#         data_type: date
+#         description: "customer record end date in dim table"
+#       - name: is_current
+#         data_type: bool
+#         description: "Signifies the activate row for each customer"
+
+#   - name: dim_product
+#     description: ""
+#     columns:
+#       - name: product_key
+#         data_type: varchar
+#         description: ""
+#         tests:
+#           - not_null
+#           - unique
+#       - name: product_id
+#         data_type: varchar
+#         description: "The unique identifier for each product."
+#       - name: category_key
+#         data_type: varchar
+#         description: "Foreign key to product category table."
+#         tests:
+#           - not_null
+#       - name: price
+#         data_type: float
+#         description: "product price"
+#       - name: size_label
+#         data_type: varchar
+#         description: "number of product published photos"
+#       - name: length_cm
+#         data_type: float
+#         description: "product length measured in centimeters."
+#       - name: height_cm
+#         data_type: float
+#         description: "product height measured in centimeters."
+#       - name: width_cm
+#         data_type: float
+#         description: "product width measured in centimeters."
+
+#   - name: dim_product_category
+#     description: ""
+#     columns:
+#       - name: category_key
+#         data_type: varchar
+#         description: ""
+#         tests:
+#           - not_null
+#           - unique
+#       - name: category_id
+#         data_type: varchar
+#         description: "The unique identifier for each product cetegory/subcategory."
+#       - name: category_name
+#         data_type: varchar
+#         description: "product subcategory label."
+#       - name: product_sub_category
+#         data_type: varchar
+#         description: "product price"
+
+#   - name: dim_date
+#     description: ""
+#     columns:
+#       - name: date_day
+#         data_type: date
+#         description: ""
+#         tests:
+#           - not_null
+#           - unique
+#       - name: prior_date_day
+#         data_type: date
+#         description: ""
+#       - name: next_date_day
+#         data_type: date
+#         description: ""
+#       - name: prior_year_date_day
+#         data_type: date
+#         description: ""
+#       - name: prior_year_over_year_date_day
+#         data_type: date
+#         description: ""
+#       - name: day_of_week
+#         data_type: integer
+#         description: ""
+#       - name: day_of_week_name
+#         data_type: varchar
+#         description: ""
+#       - name: day_of_week_name_short
+#         data_type: varchar
+#         description: ""
+#       - name: day_of_month
+#         data_type: float
+#         description: ""
+#       - name: day_of_year
+#         data_type: float
+#         description: ""
+#       - name: week_start_date
+#         data_type: date
+#         description: ""
+#       - name: week_end_date
+#         data_type: date
+#         description: ""
+#       - name: prior_year_week_start_date
+#         data_type: date
+#         description: ""
+#       - name: prior_year_week_end_date
+#         data_type: date
+#         description: ""
+#       - name: week_of_year
+#         data_type: integer
+#         description: ""
+#       - name: iso_week_start_date
+#         data_type: date
+#         description: ""
+#       - name: iso_week_end_date
+#         data_type: date
+#         description: ""
+#       - name: prior_year_iso_week_start_date
+#         data_type: date
+#         description: ""
+#       - name: prior_year_iso_week_end_date
+#         data_type: date
+#         description: ""
+#       - name: iso_week_of_year
+#         data_type: integer
+#         description: ""
+#       - name: prior_year_week_of_year
+#         data_type: integer
+#         description: ""
+#       - name: prior_year_iso_week_of_year
+#         data_type: integer
+#         description: ""
+#       - name: month_of_year
+#         data_type: integer
+#         description: ""
+#       - name: month_name
+#         data_type: varchar
+#         description: ""
+#       - name: month_name_short
+#         data_type: varchar
+#         description: ""
+#       - name: month_start_date
+#         data_type: date
+#         description: ""
+#       - name: month_end_date
+#         data_type: date
+#         description: ""
+#       - name: prior_year_month_start_date
+#         data_type: date
+#         description: ""
+#       - name: prior_year_month_end_date
+#         data_type: date
+#         description: ""
+#       - name: quarter_of_year
+#         data_type: integer
+#         description: ""
+
+#       - name: quarter_start_date
+#         data_type: date
+#         description: ""
+
+#       - name: quarter_end_date
+#         data_type: date
+#         description: ""
+
+#       - name: year_number
+#         data_type: integer
+#         description: ""
+
+#       - name: year_start_date
+#         data_type: date
+#         description: ""
+
+#       - name: year_end_date
+#         data_type: date
+#         description: ""
