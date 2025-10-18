@@ -125,9 +125,10 @@ dbt docs serve --host 0.0.0.0 --port 8080
 ```
 ---
 
-### Data and Schema Preview Using Dbeaver (NOTE: you can use any sql editor, simply login using the PG_USER and PG_PASS credentials in the `.env` file you created eariler.)
+### Preview Data and Schema Using DBeaver (NOTE: you can use any sql editor, simply login using the PG_USER and PG_PASS credentials in the `.env` file you created eariler.)
 ![](images/data_preview.png)
 
+---
 
 ### DBT Lineage Diagram
 ![](images/dbt-dag.png)
