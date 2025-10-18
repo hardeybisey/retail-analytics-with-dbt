@@ -1,13 +1,16 @@
+
 {{ config(tags = ['product']) }}
 SELECT
-    sp.product_id,
-    sp.product_name,
-    sp.price,
-    sp.size_label,
-    sp.length_cm,
-    sp.height_cm,
-    sp.width_cm,
-    spc.category_key,
-    {{ dbt_utils.generate_surrogate_key(["product_id"]) }} AS product_key
-FROM {{ ref('stg_products') }} AS sp
-LEFT JOIN {{ ref('dim_product_category') }} AS spc on sp.category_id=spc.category_id
+    s.product_id,
+    s.product_name,
+    s.category_name,
+    s.price,
+    s.size_label,
+    s.length_cm,
+    s.height_cm,
+    s.width_cm,
+    s.dbt_valid_from::date AS product_valid_from_date,
+    s.dbt_valid_to::date AS product_valid_to_date,
+    (s.dbt_valid_to IS null) AS product_is_current,
+    {{ dbt_utils.generate_surrogate_key(["s.product_id", "s.dbt_valid_from"]) }} AS product_sk
+FROM {{ ref('snapshot_products') }} AS s

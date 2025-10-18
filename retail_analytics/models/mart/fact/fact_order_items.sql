@@ -4,7 +4,6 @@
 WITH order_items_base AS (
 
     SELECT
-        {{ dbt_utils.generate_surrogate_key(["oi.order_id", "oi.order_item_id"]) }} AS order_item_key,
         oi.order_id,
         oi.order_item_id,
         oi.product_id,
@@ -19,24 +18,25 @@ WITH order_items_base AS (
 
 order_item_enriched AS (
     SELECT
-        oi.order_item_key,
         oi.order_id,
         oi.order_item_id,
         oi.item_value,
         oi.freight_value,
-        pd.product_key,
-        sd.seller_key,
+        pd.product_sk,
+        sd.seller_sk,
 
         -- Joining with date dimensions
         odd.date_day AS order_date_key,
         sdd.date_day AS shipping_limit_date_key
 
     FROM order_items_base AS oi
-    LEFT JOIN {{ ref('dim_product') }} AS pd ON oi.product_id = pd.product_id
+    LEFT JOIN {{ ref('dim_product') }} AS pd
+        ON oi.product_id = pd.product_id
+        AND oi.order_date >= pd.product_valid_from_date AND (oi.order_date < pd.product_valid_to_date OR pd.product_valid_to_date IS null)
     LEFT JOIN {{ ref('dim_seller') }} AS sd
         ON
             oi.seller_id = sd.seller_id
-            AND oi.order_date >= sd.valid_from_date AND (oi.order_date < sd.valid_to_date OR sd.valid_to_date IS null)
+            AND oi.order_date >= sd.seller_valid_from_date AND (oi.order_date < sd.seller_valid_to_date OR sd.seller_valid_to_date IS null)
     LEFT JOIN {{ ref('dim_date') }} AS odd ON oi.order_date = odd.date_day
     LEFT JOIN {{ ref('dim_date') }} AS sdd ON oi.shipping_limit_date = sdd.date_day
 )
