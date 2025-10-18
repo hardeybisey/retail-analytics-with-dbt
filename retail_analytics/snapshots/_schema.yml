@@ -1,80 +1,213 @@
 version: 2
 
 snapshots:
-  - name: snapshot_sellers
-    description: "Seller data from the retail dataset."
-    columns:
-      - name: seller_id
-        data_type: text
-        description: "The unique identifier for each seller."
-        tests:
-          - not_null
-      - name: address
-        data_type: text
-        description: "full seller adrress line."
-        tests:
-          - not_null
-      - name: state
-        data_type: text
-        description: "seller state."
-        tests:
-          - not_null
-      - name: zip_code_prefix
-        data_type: text
-        description: "seller zip code"
-        tests:
-          - not_null
-      - name: created_date
-        data_type: timestamp
-        description: "seller created date in source system"
-        tests:
-          - not_null
-      - name: updated_date
-        data_type: timestamp
-        description: "seller updated date from source system"
-      - name: dbt_updated_at
-        data_type: timestamp
-        description: "last modified date of the seller record"
-      - name: dbt_valid_to
-        data_type: timestamp
-        description: "end date of the seller record, null if the record is current"
-
-
-
   - name: snapshot_customers
-    description: "Customer data from the retail dataset."
+    description: "Customer SCD2 table."
+    config:
+      contract:
+        enforced: true
     columns:
       - name: customer_id
-        data_type: text
+        data_type: varchar
         description: "The unique identifier for each customer."
-        tests:
-          - not_null
+        constraints:
+          - type: not_null
+
       - name: address
-        data_type: text
-        description: "full customer adrress line."
-        tests:
-          - not_null
+        data_type: varchar
+        description: ""
+        constraints:
+          - type: not_null
+
       - name: state
-        data_type: text
-        description: "customer state."
-        tests:
-          - not_null
+        data_type: varchar
+        description: ""
+        constraints:
+          - type: not_null
+
       - name: zip_code_prefix
-        data_type: text
-        description: "customer zip code"
-        tests:
-          - not_null
+        data_type: varchar
+        description: ""
+        constraints:
+          - type: not_null
+
       - name: created_date
         data_type: timestamp
-        description: "customer created date in source system"
-        tests:
-          - not_null
+        description: ""
+        constraints:
+          - type: not_null
+
       - name: updated_date
         data_type: timestamp
-        description: "customer updated date from source system"
+        description: ""
+
+      - name: dbt_scd_id
+        data_type: text
+        description: ""
+        constraints:
+          - type: not_null
+          - type: unique
+
       - name: dbt_updated_at
         data_type: timestamp
-        description: "last modified date of the customer record"
+        description: ""
+
+      - name: dbt_valid_from
+        data_type: timestamp
+        description: ""
+        constraints:
+          - type: not_null
+
       - name: dbt_valid_to
         data_type: timestamp
-        description: "end date of the customer record, null if the record is current"
+        description: ""
+
+  - name: snapshot_products
+    description:  "Product SCD2 table."
+    config:
+      contract:
+        enforced: true
+    columns:
+      - name: product_id
+        data_type: varchar
+        description: "unique identifier for each product"
+        constraints:
+          - type: not_null
+
+      - name: product_name
+        data_type: varchar
+        description: "product name"
+        constraints:
+          - type: not_null
+
+      - name: category_name
+        data_type: varchar
+        description: ""
+        constraints:
+          - type: not_null
+
+      - name: price
+        data_type: float
+        description: ""
+        constraints:
+          - type: not_null
+
+      - name: size_label
+        data_type: varchar
+        description: ""
+        constraints:
+          - type: not_null
+
+      - name: length_cm
+        data_type: float
+        description: ""
+        constraints:
+          - type: not_null
+
+      - name: height_cm
+        data_type: float
+        description: ""
+        constraints:
+          - type: not_null
+
+      - name: width_cm
+        data_type: float
+        description: ""
+        constraints:
+          - type: not_null
+
+      - name: created_date
+        data_type: timestamp
+        description: ""
+        constraints:
+          - type: not_null
+
+      - name: updated_date
+        data_type: timestamp
+        description: ""
+        constraints:
+          - type: not_null
+
+      - name: dbt_updated_at
+        data_type: timestamp
+        description: ""
+
+      - name: dbt_scd_id
+        data_type: varchar
+        description: ""
+        constraints:
+          - type: not_null
+          - type: unique
+
+      - name: dbt_valid_from
+        data_type: timestamp
+        description: ""
+        constraints:
+          - type: not_null
+
+      - name: dbt_valid_to
+        data_type: timestamp
+        description: ""
+
+  - name: snapshot_sellers
+    description:  "Seller SCD2 table."
+    config:
+      contract:
+        enforced: true
+    columns:
+      - name: seller_id
+        data_type: varchar
+        description: "The unique identifier for each seller."
+        constraints:
+          - type: not_null
+
+      - name: address
+        data_type: varchar
+        description: ""
+        constraints:
+          - type: not_null
+
+      - name: state
+        data_type: varchar
+        description: ""
+        constraints:
+          - type: not_null
+
+      - name: zip_code_prefix
+        data_type: varchar
+        description: ""
+        constraints:
+          - type: not_null
+
+      - name: created_date
+        data_type: timestamp
+        description: ""
+        constraints:
+          - type: not_null
+
+      - name: updated_date
+        data_type: timestamp
+        description: ""
+
+      - name: dbt_scd_id
+        data_type: text
+        description: ""
+        constraints:
+          - type: not_null
+          - type: unique
+
+      - name: dbt_updated_at
+        data_type: timestamp
+        description: ""
+        constraints:
+          - type: not_null
+
+      - name: dbt_valid_from
+        data_type: timestamp
+        description: ""
+        constraints:
+          - type: not_null
+
+      - name: dbt_valid_to
+        data_type: timestamp
+        description: ""
