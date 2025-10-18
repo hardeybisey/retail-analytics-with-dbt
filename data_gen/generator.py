@@ -285,8 +285,8 @@ def generate_orders_threaded(
     with ProcessPoolExecutor(max_workers=n_threads) as executor:
         orders_per_thread = n_orders // n_threads
         for i in range(n_threads):
-            start_id = i * orders_per_thread + 1
-            end_id = (i + 1) * orders_per_thread if i < n_threads - 1 else n_orders
+            start_id = i * orders_per_thread
+            end_id = (i + 1) * orders_per_thread
             futures.append(
                 executor.submit(
                     _generate_orders, customers, sellers, products, start_id, end_id
