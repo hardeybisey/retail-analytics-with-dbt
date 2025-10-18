@@ -10,6 +10,6 @@ SELECT
 FROM
     {{ ref('dim_seller') }} AS s
 INNER JOIN
-    {{ ref('fact_order_items') }} AS foi ON s.seller_key = foi.seller_key
+    {{ ref('fact_order_items') }} AS foi ON s.seller_sk = foi.seller_sk
 GROUP BY s.seller_id
 ORDER BY total_sales DESC

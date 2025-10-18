@@ -14,7 +14,7 @@ WITH customer_rfm AS (
         {{ ref('dim_customer') }} AS c
     INNER JOIN
 
-        {{ ref('fact_orders') }} AS fo ON c.customer_key = fo.customer_key
+        {{ ref('fact_order_summary') }} AS fo ON c.customer_sk = fo.customer_sk
     GROUP BY
         c.customer_id
 )

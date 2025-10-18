@@ -7,7 +7,7 @@ WITH monthly_sales AS (
     SELECT
         DATE_TRUNC('month', order_date_key) AS sales_month,
         SUM(total_order_value) AS total_sales
-    FROM {{ ref('fact_orders') }}
+    FROM {{ ref('fact_order_summary') }}
     GROUP BY sales_month
 )
 
