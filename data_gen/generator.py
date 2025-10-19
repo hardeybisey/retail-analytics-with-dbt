@@ -150,7 +150,7 @@ def generate_customers(n_customers: int = N_CUSTOMERS) -> dict:
             "customer_address": fake.street_address(),
             "customer_state": state_abbr,
             "customer_zip_code": fake.zipcode_in_state(state_abbr),
-            "customer_created_date": random_date(end=date(2023, 12, 31)),
+            "customer_created_date": random_date(start=date(2021, 7, 31)),
             "customer_updated_date": None,
         }
     return customers
@@ -167,7 +167,7 @@ def generate_sellers(n_sellers: int = N_SELLERS) -> dict:
             "seller_address": fake.street_address(),
             "seller_state": states[i],
             "seller_zip_code": fake.zipcode_in_state(states[i]),
-            "seller_created_date": random_date(end=date(2023, 7, 31)),
+            "seller_created_date": random_date(end=date(2021, 7, 31)),
             "seller_updated_date": None,
         }
     return sellers
@@ -175,9 +175,9 @@ def generate_sellers(n_sellers: int = N_SELLERS) -> dict:
 
 def generate_order_items(
     order_id: str,
+    seller_id: str,
     shipping_limit_date: date,
     products_list: list[dict],
-    seller_id: str,
 ) -> list[dict]:
     """Generate order items linked to an order."""
     return [
@@ -196,7 +196,7 @@ def generate_order_items(
 
 def _generate_orders(
     customers: dict[str, dict],
-    sellers: pd.DataFrame,
+    sellers: dict[str, dict],
     products: list[dict],
     order_start_id: int,
     order_end_id: int,
@@ -207,6 +207,7 @@ def _generate_orders(
     orders = []
     all_order_items = []
     customer_ids = list(customers.keys())
+    seller_ids = list(sellers.keys())
 
     for idx in range(order_start_id, order_end_id):
         customer_id = random.choice(customer_ids)
@@ -215,13 +216,6 @@ def _generate_orders(
 
         # Ensure order date is after customer creation date
         purchase_date = random_date(start=start_date)
-
-        # Ensure seller was created before purchase date
-        valid_seller: str = (
-            sellers[sellers["seller_created_date"] <= purchase_date]["seller_id"]
-            .sample(1)
-            .iat[0]
-        )
 
         approved_at = estimated_delivery_date = delivered_carrier_date = (
             delivered_customer_date
@@ -263,7 +257,7 @@ def _generate_orders(
             order_id=order_id,
             shipping_limit_date=base_date + timedelta(days=random.randint(-1, 3)),
             products_list=random.choices(products, k=random.randint(1, 5)),
-            seller_id=valid_seller,
+            seller_id=random.choice(seller_ids),
         )
         all_order_items.extend(order_items)
 
@@ -272,7 +266,7 @@ def _generate_orders(
 
 def generate_orders_threaded(
     customers: dict[str, dict],
-    sellers: pd.DataFrame,
+    sellers: dict[str, dict],
     products: list[dict],
     n_orders: int = N_ORDERS,
     n_threads: int = 4,
@@ -334,7 +328,7 @@ if __name__ == "__main__":
     logger.info("Synthetic data generation started")
     products = generate_products()
     customers = generate_customers(n_customers=args.customers)
-    sellers = pd.DataFrame(generate_sellers(n_sellers=args.sellers).values())
+    sellers = generate_sellers(n_sellers=args.sellers)
     orders, order_items = generate_orders_threaded(
         customers, sellers, products, args.orders, n_threads=os.cpu_count() or 4
     )
@@ -347,13 +341,13 @@ if __name__ == "__main__":
         pd.DataFrame(customers.values()).to_parquet(
             path / "customers.parquet", index=False
         )
-        sellers.to_parquet(path / "sellers.parquet", index=False)
+        pd.DataFrame(sellers.values()).to_parquet(path / "sellers.parquet", index=False)
         pd.DataFrame(orders).to_parquet(path / "orders.parquet", index=False)
         pd.DataFrame(order_items).to_parquet(path / "order_items.parquet", index=False)
     else:
         pd.DataFrame(products).to_csv(path / "products.csv", index=False)
         pd.DataFrame(customers.values()).to_csv(path / "customers.csv", index=False)
-        sellers.to_csv(path / "sellers.csv", index=False)
+        pd.DataFrame(sellers.values()).to_csv(path / "sellers.csv", index=False)
         pd.DataFrame(orders).to_csv(path / "orders.csv", index=False)
         pd.DataFrame(order_items).to_csv(path / "order_items.csv", index=False)
 
